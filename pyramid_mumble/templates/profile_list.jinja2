@@ -1,0 +1,25 @@
+{% extends "layout.jinja2" %}
+
+{% block header %}
+    <div class="header row">
+        <div class="col text-center">
+            <h2><span class="font-semi-bold">Speakers</span></h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="content row">
+    <div class="col">
+    {% if profile_list %}
+        <ul>
+        {% for profile in profile_list %}
+        <li><a href="{{ request.route_url('profile', uid=profile.id) }}">{{ profile.realname }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+    <p>There are no speakers registered yet.</p>
+    {% endif %}
+    </div>
+</div>
+{% endblock content %}

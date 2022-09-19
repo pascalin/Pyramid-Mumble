@@ -1,0 +1,40 @@
+{% extends "layout.jinja2" %}
+
+{% block header %}
+    <div class="header row">
+        <div class="col text-center">
+            <h2><span class="font-semi-bold">{{ profile.realname }}</span></h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="content row">
+    <div class="col-md-3">
+        <p>
+            <span class="font-bold">Organization</span>: <span class="font-normal">{{ profile.organization }}</span><br>
+            <span class="font-bold">Location</span>: <span class="font-normal">{% if profile.state %}{{ profile.state }}, {% endif %}{{ profile.country }}</span><br>
+        </p>
+    </div>
+    <div {% if request.identity == profile %}class="col-md-5"{% else %}class="col-md-9"{% endif %}>
+        {% if profile.is_speaker %}
+        <h3>{% if request.identity == profile %}Your schedule{% else %}Schedule{% endif %}</h3>
+        <ul>
+        {% for session in sessions %}
+            <li><a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a> on {{ session.start_time }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% if request.identity == profile %}
+    <div class="col-md-4">
+        <h3>Activities you follow</h3>
+        <ul>
+        {% for session in followed %}
+            <li><a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a> on {{ session.start_time }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}

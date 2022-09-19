@@ -1,0 +1,17 @@
+{% extends "layout.jinja2" %}
+
+{% block header %}
+    <div class="header row">
+        <div class="col text-center">
+             <h2><span class="font-semi-bold">403</span> Forbidden</h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="content row text-center">
+    <div class="col">
+      <p>Seemingly ypu tried to access a section of the site which you have no permission to see. If you regard this is an error, please contact the owner of {{ project }}.</p>
+    </div>
+</div>
+{% endblock content %}

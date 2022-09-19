@@ -1,0 +1,26 @@
+{% extends "layout.jinja2" %}
+
+{% block header %}
+    <div class="header row">
+        <div class="col text-center">
+            <h2><span class="font-semi-bold">{{ activity.title }}</span></h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="content row">
+    <div class="col-md-4">
+        <ul>
+            {% for profile in activity.performers %}
+            <li><a href="{{ request.route_url('profile', uid=profile.id) }}">{{ profile.realname }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <blockquote>
+            {{ activity.description }}
+        </blockquote>
+    </div>
+</div>
+{% endblock content %}

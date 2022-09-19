@@ -1,0 +1,37 @@
+{% extends "layout.jinja2" %}
+
+{% block header %}
+    <div class="header row">
+        <div class="col text-center">
+            <h2><span class="font-semi-bold">Schedule</span></h2>
+        </div>
+      <div class="col text-center">
+            <h3><span class="font-semi-bold">{{ schedule_date }}</span></h3>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% if sessions %}
+    <div class="content row">
+        <div class="col-md-3"></div>
+    {% for day, day_group in sessions|groupby('start_time.day') %}
+        <div class="col">
+            <h4 class="text-center">{{ day_group[0].start_time.strftime("%a %-d, %B") }}</h4>
+            <ul>
+        {% for hour, list in day_group|groupby('start_time.hour') %}
+            {% for session in list %}
+               <li><a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a></li>
+            {% endfor %}
+        {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+    {% else %}
+        <div class="col">
+        <p>There are no sessions scheduled yet for this date.</p>
+        </div>
+    {% endif %}
+    </div>
+</div>
+{% endblock content %}

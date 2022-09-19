@@ -1,0 +1,37 @@
+{% extends "layout.jinja2" %}
+
+{% block header %}
+    <div class="header row">
+        <div class="col text-center">
+            <h2><span class="font-semi-bold"></span></h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="content row">
+{#  <h1><span class="font-semi-bold">Pyramid Mumble</span> <span class="smaller"></span></h1>#}
+{#  <p class="lead">Welcome to <span class="font-normal">{{project}}</span>.</p>#}
+        <div class="site-actions col-md-3"></div>
+        <div class="site-actions col-md-5">
+    {% if not request.is_authenticated %}
+    <p>Do you want to <strong><a href="/signup/">register</a></strong>?</p>
+    <p>Are you already registered? Please proceed to <strong><a href="/login/">login</a></strong></p>
+        {% else %}
+        <p>Welcome to the <strong>{{ project }}</strong> conference site.<br>
+        Here you can find most of the resources that you will need for this event:</p>
+        <ul>
+            <li><a href="{{ request.route_path('profile', uid=request.identity.id) }}">Your profile and sessions</a></li>
+            <li><a href="{{ request.route_path('settings') }}">Your preferences</a></li>
+            <li><a href="{{ request.route_path('profile_list') }}">List of speakers</a></li>
+            <li><a href="{{ request.route_path('schedule') }}"">The conference program</a></li>
+        </ul>
+    {% endif %}
+</div>
+<div class="site-statistics col-md-4">
+    <p><span class="statistics-count">{{ "%.2d"|format(days) }}</span> <span class="statistic-title"><strong>Remaining days</strong></span></p>
+    <p><span class="statistics-count">{{ "%.2d"|format(speakers) }}</span> <span class="statistic-title"><strong>Speakers</strong></span></p>
+    <p><span class="statistics-count">{{ "%.2d"|format(users) }}</span> <span class="statistic-title"><strong>Registrations</strong></span></p>
+</div>
+</div>
+{% endblock content %}

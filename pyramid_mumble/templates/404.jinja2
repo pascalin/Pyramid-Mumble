@@ -1,0 +1,17 @@
+{% extends "layout.jinja2" %}
+
+{% block header %}
+    <div class="header row">
+        <div class="col text-center">
+             <h2><span class="font-semi-bold">404</span> Page Not Found</h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="content row text-center">
+    <div class="col">
+        <p>The content you requested was not found or it was removed from this site. Please confirm the address is correct before contacting the owner of {{ project }}.</p>
+    </div>
+</div>
+{% endblock content %}

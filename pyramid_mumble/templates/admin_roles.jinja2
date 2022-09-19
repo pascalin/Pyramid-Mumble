@@ -1,0 +1,25 @@
+{% extends "layout.jinja2" %}
+
+{% block header %}
+    <div class="header row">
+        <div class="col text-center">
+             <h2><span class="font-semi-bold">User roles</span></h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="content row">
+    <div class="col-md-3">
+        <p></p>
+    </div>
+    <div class="col-md-9">
+      {% if useradmin_form %}
+         {{ useradmin_form|safe }}
+      {% endif %}
+      {% if appstruct %}
+      {{ appstruct }}
+      {% endif %}
+    </div>
+</div>
+{% endblock content %}

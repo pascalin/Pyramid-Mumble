@@ -1,0 +1,12 @@
+- ~Add time zone setting for all users.~
+- ~Add Track, Session, and Talk (or Activity) models: sessions will be assigned a track and users will be linked to sessions (or talks).~
+    - ~Add to sessions information about the time when they are scheduled.~
+    - ~Add view for admins to see list of registered users and choose their role: speaker, staff, or audience.~
+    - Permissions should enable actions based both on general role and on their relationship to each session.
+- Improve email communications with a HTML version.
+- Enable a failed(action) view.
+- Mumble support:
+    - Enable registration of users from Pyramid_Mumble to the configured Mumble server.
+    - Enable transmission of audio output from server to web client in a chosen language through pymumble and socketio.
+    - Enable a talk button to transmit audio input from web client to mumble server.
+    - Enable sharing of screen by web clients through [picklecast](https://github.com/evidlo/picklecast).
