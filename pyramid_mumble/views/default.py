@@ -156,7 +156,7 @@ def profile_list_view(request):
     else:
         project = "A Pyramid Mumble Site"
 
-    profiles = request.dbsession.query(models.MumbleUser).filter_by(is_speaker=True).all()
+    profiles = request.dbsession.query(models.MumbleUser).filter_by(is_speaker=True).order_by("realname").all()
 
     return {'profile_list': profiles, 'project': project}
 
