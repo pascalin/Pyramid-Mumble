@@ -18,3 +18,4 @@ def includeme(config):
     config.add_route('success_signin', '/signup/success/')
     config.add_route('captcha', '/captcha/{captcha_id}.png')
     config.add_route('admin_roles', '/admin/roles/')
+    config.add_route('mumble_home', '/room/{channel}/')
