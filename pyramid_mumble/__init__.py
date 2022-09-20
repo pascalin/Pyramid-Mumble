@@ -1,12 +1,14 @@
 from pyramid.config import Configurator
 from pyramid.session import SignedCookieSessionFactory
 from .security.policy import SecurityPolicy
-import random
+import socketio
 
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
+    sio = socketio.Server(logger=True, namespaces=['/', '/audio'])
+
     with Configurator(settings=settings) as config:
         session_factory = SignedCookieSessionFactory(settings['auth.secret'],
                                    secure=True,
@@ -18,4 +20,7 @@ def main(global_config, **settings):
         config.include('.routes')
         config.include('.models')
         config.scan()
-    return config.make_wsgi_app()
+    pyramid_app = config.make_wsgi_app()
+    return socketio.WSGIApp(sio, pyramid_app)
+
+
