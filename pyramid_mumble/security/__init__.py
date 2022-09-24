@@ -13,8 +13,10 @@ def check_password(pw, hashed_pw):
     return bcrypt.checkpw(pw.encode('utf8'), expected_hash)
 
 
-def random_password(length=8, hashed=False):
-    password = ''.join((secrets.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(length)))
+def random_password(length=12, hashed=False):
+    password = ''.join((secrets.choice(string.ascii_letters + string.digits) for i in range(2)))
+    password = password + ''.join((secrets.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(length-4)))
+    password = password + ''.join((secrets.choice(string.ascii_letters + string.digits) for i in range(2)))
     if hashed:
         return hash_password(password)
     return password

@@ -93,7 +93,9 @@ def signup_view(request):
                                               
                            To access the conference site enter: {request.route_url('login')}
                            
-                           Employing the following password: {password}
+                           Employing the following password:
+                            
+                            {password}
                           """,
                           html=f"""<p>Dear <strong>{realname}</strong>,<br>
                           you have been successfully registered to {project}.</p>
@@ -101,7 +103,8 @@ def signup_view(request):
                            email with more details for logging into the conference website and to make some preparations
                            in order to enhance your interactions during the conference.</p>
                            <p>To access the conference site enter: <a href="{request.route_url('login')}">{request.route_url('login')}</a><br>
-                           Employing the following password: <strong>{password}</strong></p>
+                           Employing the following password:<br>
+                            <strong>{password}</strong></p>
                            """,
                           )
 

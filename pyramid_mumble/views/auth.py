@@ -102,19 +102,25 @@ def recover_view(request):
         password = security.random_password(hashed=False)
         if user is not None:
             user.password = security.hash_password(password)
-            message = Message(subject="f{project}: Password recovery",
+            message = Message(subject=f"{project}: Password recovery",
                               recipients=[email],
                               body=f"""Dear {user.realname},
                               you, or someone else, asked for your password to be recovered at the {project}'s conference site.
                               
-                              Your password is the following: {password} and you can use it to log in the following link: {request.route_url('login')}
+                              Your password is the following:
+                               
+                               {password}
+                                
+                               You can use it to log in through following link: {request.route_url('login')}
                               
                               Sincerely,
                               the friendly webmaster of {project}.
                               """,
                               html=f"""<p>Dear <strong>{user.realname}</strong>,<br>
                               you, or someone else, asked for your password to be recovered at the {project}'s conference site.</p>
-                              <p>Your password is the following: <strong>{password}</strong> and you can use it to log in
+                              <p>Your password is the following:<br>
+                               <strong>{password}</strong><br>
+                                and you can use it to log in through
                                the following link: <a href="{request.route_url('login')}">{request.route_url('login')}</a></p>
                               <p>Sincerely,<br>
                               the friendly webmaster of {project}.</p>
