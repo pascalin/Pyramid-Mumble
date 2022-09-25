@@ -24,7 +24,7 @@ def mumble_view(request):
     else:
         project = "A Pyramid Mumble Site"
 
-    return {'project': project, 'mumble_channel': 'Root'}
+140595906398192
 
 
 # @socketio.on('start-recording', namespace='/audio')
