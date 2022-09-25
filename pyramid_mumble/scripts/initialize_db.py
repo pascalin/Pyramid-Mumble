@@ -22,7 +22,6 @@ def setup_models(dbsession):
         state="CdMx",
         email="mumble@hapuntia.com",
         language="English",
-        publickey="",
         is_staff=True,
         timezone="America/Mexico_City",
     )
