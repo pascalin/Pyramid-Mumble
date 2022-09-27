@@ -184,14 +184,15 @@ def profile_view(request):
         raise HTTPNotFound()
 
     sessions = []
+    tz_local = pytz.timezone("America/Mexico_City")
     if request.identity.timezone:
-        tz = request.identity.timezone or pytz.timezone("America/Mexico_City")
+        tz = request.identity.timezone or tz_local
     for activity in profile.activities:
         session = {
             'id': activity.session.id,
             'title': str(activity.session),
-            'start_time': activity.session.start_time.astimezone(tz=pytz.timezone(tz)),
-            'end_time': activity.session.end_time.astimezone(tz=pytz.timezone(tz)),
+            'start_time': tz_local.localize(activity.session.start_time).astimezone(tz=pytz.timezone(tz)),
+            'end_time': tz_local.localize(activity.session.end_time).astimezone(tz=pytz.timezone(tz)),
         }
         sessions.append(session)
 

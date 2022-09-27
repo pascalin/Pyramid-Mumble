@@ -62,13 +62,14 @@ def session_view(request):
     if not session:
         raise HTTPNotFound()
 
+    tz_local = pytz.timezone("America/Mexico_City")
     if request.identity.timezone:
-        tz = request.identity.timezone or pytz.timezone("America/Mexico_City")
+        tz = request.identity.timezone or tz_local
     s = {
         'title': str(session),
         'track': session.track,
-        'start_time': session.start_time.astimezone(pytz.timezone(tz)),
-        'end_time': session.end_time.astimezone(pytz.timezone(tz)),
+        'start_time': tz_local.localize(session.start_time).astimezone(pytz.timezone(tz)),
+        'end_time': tz_local.localize(session.end_time).astimezone(pytz.timezone(tz)),
         'description': session.description,
         'activities': session.activities,
     }

@@ -3,7 +3,7 @@
 {% block header %}
     <div class="header row">
         <div class="col text-center">
-            <h2><span class="font-semi-bold">{{ session['title'] }}</span></h2>
+            <h2><span class="font-semi-bold"><em>{{ session['title'] }}</em></span></h2>
         </div>
     </div>
 {% endblock %}
@@ -12,7 +12,7 @@
 <div class="content row">
     <div class="col-md-4">
         <p>
-            <span class="font-bold">Track</span>: <em><span class="font-normal">{{ session['track'] }}</span></em><br>
+            <span class="font-bold">Track</span>: <span class="font-normal">{{ session['track'] }}</span><br>
             <span class="font-bold">Starts</span>: <em><span class="font-normal">{{ session['start_time'] }}</span></em><br>
             <span class="font-bold">Ends</span>: <em><span class="font-normal">{{ session['end_time'] }}</span></em><br>
             <small>(times and dates are shown in the time zone you configured in the settings)</small>
@@ -24,7 +24,7 @@
     <div class="col-md-6">
         <ul>
         {% for activity in session['activities'] %}
-            <li><a href="{{ request.route_path('activity', activity_id=activity.id) }}">{{ activity.title }}</a>
+            <li><a href="{{ request.route_path('activity', activity_id=activity.id) }}"><strong><em>{{ activity.title }}</em></strong></a>
             {% for profile in activity.performers %}
                 <ul>
                 <li><a href="{{ request.route_path('profile', uid=profile.id) }}">{{ profile.realname }}</a></li>
