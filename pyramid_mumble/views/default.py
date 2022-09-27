@@ -186,13 +186,15 @@ def profile_view(request):
     sessions = []
     tz_local = pytz.timezone("America/Mexico_City")
     if request.identity.timezone:
-        tz = request.identity.timezone or tz_local
+        tz = pytz.timezone(request.identity.timezone)
+    else:
+        tz = tz_local
     for activity in profile.activities:
         session = {
             'id': activity.session.id,
             'title': str(activity.session),
-            'start_time': tz_local.localize(activity.session.start_time).astimezone(tz=pytz.timezone(tz)),
-            'end_time': tz_local.localize(activity.session.end_time).astimezone(tz=pytz.timezone(tz)),
+            'start_time': tz_local.localize(activity.session.start_time).astimezone(tz=tz),
+            'end_time': tz_local.localize(activity.session.end_time).astimezone(tz=tz),
         }
         sessions.append(session)
 
