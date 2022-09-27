@@ -179,6 +179,8 @@ def profile_view(request):
         project = "A Pyramid Mumble Site"
 
     profile = request.dbsession.query(models.MumbleUser).filter_by(id=uid).first()
+    if not profile:
+        raise HTTPNotFound()
     country = pycountry.countries.lookup(profile.country)
     if not profile:
         raise HTTPNotFound()
