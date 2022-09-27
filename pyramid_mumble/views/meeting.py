@@ -21,6 +21,7 @@ from .. import models
 from ..forms import admin
 
 import datetime
+import pytz
 import itertools
 import unidecode
 
@@ -61,7 +62,19 @@ def session_view(request):
     if not session:
         raise HTTPNotFound()
 
-    return {'session': session, 'project': project}
+    if request.identity.timezone:
+        tz = request.identity.timezone or pytz.timezone("America/Mexico_City")
+    s = {
+        'title': str(session),
+        'track': session.track,
+        'start_time': session.start_time.astimezone(pytz.timezone(tz)),
+        'end_time': session.end_time.astimezone(pytz.timezone(tz)),
+        'description': session.description,
+        'activities': session.activities,
+    }
+
+
+    return {'session': s, 'project': project}
 
 
 @view_config(route_name='edit_session', renderer='pyramid_mumble:templates/admin_sessions.jinja2', permission='admin')

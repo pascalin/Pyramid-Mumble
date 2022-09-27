@@ -179,7 +179,18 @@ def profile_view(request):
     country = pycountry.countries.lookup(profile.country)
     if not profile:
         raise HTTPNotFound()
-    sessions = {activity.session for activity in profile.activities}
+
+    sessions = []
+    if request.identity.timezone:
+        tz = request.identity.timezone or pytz.timezone("America/Mexico_City")
+    for activity in profile.activities:
+        session = {
+            'id': activity.session.id,
+            'title': str(activity.session),
+            'start_time': activity.session.start_time.astimezone(tz=pytz.timezone(tz)),
+            'end_time': activity.session.end_time.astimezone(tz=pytz.timezone(tz)),
+        }
+        sessions.append(session)
 
     return {'profile': profile, 'sessions': sessions, 'country': country,'project': project}
 
