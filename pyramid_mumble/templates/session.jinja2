@@ -25,11 +25,11 @@
         <ul>
         {% for activity in session['activities'] %}
             <li><a href="{{ request.route_path('activity', activity_id=activity.id) }}"><strong><em>{{ activity.title }}</em></strong></a>
+            <ul>
             {% for profile in activity.performers %}
-                <ul>
                 <li><a href="{{ request.route_path('profile', uid=profile.id) }}">{{ profile.realname }}</a></li>
-                </ul>
             {% endfor %}
+            </ul>
             </li>
         {% endfor %}
         </ul>

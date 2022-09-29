@@ -26,10 +26,11 @@ import itertools
 import unidecode
 
 
-
-
 @view_config(route_name='schedule', renderer='pyramid_mumble:templates/schedule.jinja2')
 def schedule_view(request):
+    detailed = False
+    if 'detailed' in request.GET:
+        detailed = True
     year = request.matchdict.get('year')
     month = request.matchdict.get('month')
     day = request.matchdict.get('day')
@@ -44,8 +45,9 @@ def schedule_view(request):
     for track in tracks:
         # track_sessions = request.dbsession.query(models.Session).filter_by(track_id=track.id)
         sessions.extend(track.sessions)
+    sessions.sort(key=lambda s:s.start_time)
 
-    return {'tracks': tracks, 'sessions': sessions, 'project': project, 'schedule_date': ""}
+    return {'tracks': tracks, 'sessions': sessions, 'project': project, 'schedule_date': "", 'detailed': detailed}
 
 
 

@@ -21,9 +21,27 @@
             <h4 class="text-center">{{ day_group[0].start_time.strftime("%a %-d, %B") }}</h4>
             <ul>
         {% for hour, list in day_group|groupby('start_time.hour') %}
+            {% if detailed %}
+            {% for session in list %}
+                <li><a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a>
+                <ul>
+                {% for activity in session.activities %}
+                    <li><a href="{{ request.route_path('activity', activity_id=activity.id) }}"><strong><em>{{ activity.title }}</em></strong></a>
+                    <ul>
+                    {% for profile in activity.performers %}
+                    <li><a href="{{ request.route_path('profile', uid=profile.id) }}">{{ profile.realname }}</a></li>
+                    {% endfor %}
+                    </ul>
+                    </li>
+                {% endfor %}
+                </ul>
+                </li>
+            {% endfor %}
+            {% else %}
             {% for session in list %}
                <li><a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a></li>
             {% endfor %}
+            {% endif %}
         {% endfor %}
             </ul>
         </div>
