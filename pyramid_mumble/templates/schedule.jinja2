@@ -23,7 +23,7 @@
         {% for hour, list in day_group|groupby('start_time.hour') %}
             {% if detailed %}
             {% for session in list %}
-                <li><a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a>
+                <li><span class="">From {{ session.start_time.strftime("%H:%M") }} to {{ session.end_time.strftime("%H:%M") }}</span> | <a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a>
                 <ul>
                 {% for activity in session.activities %}
                     <li><a href="{{ request.route_path('activity', activity_id=activity.id) }}"><strong><em>{{ activity.title }}</em></strong></a>
