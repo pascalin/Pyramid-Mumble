@@ -158,6 +158,7 @@ def failure_view(request):
     return {
         'action': action[0],
         'message': message,
+        'project': project,
         }
 
 
