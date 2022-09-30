@@ -63,6 +63,7 @@ def login_view(request):
 
         message = 'Failed login'
         request.response.status = 400
+        return HTTPSeeOther(request.route_path('failure', action=('login',)))
 
     return {'login_form': form.render(), 'additions': 0, 'project': project}
 

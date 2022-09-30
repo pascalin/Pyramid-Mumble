@@ -139,6 +139,28 @@ def success_view(request):
         return HTTPSeeOther(request.route_path("home"))
 
 
+@view_config(route_name='failure', renderer='pyramid_mumble:templates/failure.jinja2', permission=NO_PERMISSION_REQUIRED)
+def failure_view(request):
+    action = request.matchdict['action']
+    meeting = request.dbsession.query(models.Meeting).first()
+    if meeting:
+        project = meeting.title
+    else:
+        project = "A Pyramid Mumble Site"
+
+    if 'login' in action:
+        message = """<p>Your combination of email and password is not correct. If you are already registered, 
+        please check that you have written your password correctly. Otherwise, please register or contact us by 
+        email. """
+    else:
+        return HTTPSeeOther(request.route_path("home"))
+
+    return {
+        'action': action[0],
+        'message': message,
+        }
+
+
 @view_config(route_name='profile_list', renderer='pyramid_mumble:templates/profile_list.jinja2')
 def profile_list_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
