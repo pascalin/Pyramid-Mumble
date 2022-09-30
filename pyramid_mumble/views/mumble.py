@@ -1,3 +1,4 @@
+from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import (
     view_config,
 )
@@ -15,7 +16,7 @@ import wave
 #                template_folder='templates')
 
 
-@view_config(route_name='mumble_home', renderer='pyramid_mumble:templates/mumble.jinja2')
+@view_config(route_name='mumble_join', renderer='pyramid_mumble:templates/mumble.jinja2')
 def mumble_view(request):
     """Returns the client application."""
     meeting = request.dbsession.query(models.Meeting).first()
@@ -23,9 +24,20 @@ def mumble_view(request):
         project = meeting.title
     else:
         project = "A Pyramid Mumble Site"
+    mumble = request.context.mumble
+    # if not mumble.is_ready():
+    #     mumble.start()
 
-    return {'project': project, 'mumble_channel': 'Root'}
+    return {'project': project, 'mumble_channel': id(mumble)}
 
+
+@view_config(route_name='mumble_leave')
+def mumble_leave(request):
+    mumble_factory = request.context
+    mumble_factory.mumble.stop()
+    del mumble_factory.connections[request.identity.email]
+
+    return HTTPSeeOther(request.route_path("home"))
 
 # @socketio.on('start-recording', namespace='/audio')
 # def start_recording(options):
