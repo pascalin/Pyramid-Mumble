@@ -41,7 +41,7 @@ def mumble_view(request):
             logging.WARN(f"Event '{event}' received from {sid} client.'")
 
         @sio.on('start-recording', namespace='/audio')
-        def start_recording(options):
+        def start_recording(sid, options):
             # """Start recording audio from the client."""
             # id = uuid.uuid4().hex  # server-side filename
             # session['wavename'] = id + '.wav'
@@ -53,12 +53,12 @@ def mumble_view(request):
             mumble.users.myself.unmute()
 
         @sio.on('write-audio', namespace='/audio')
-        def write_audio(data):
+        def write_audio(sid,data):
             """Write a chunk of audio from the client."""
             mumble.sound_output.add_sound(data)
 
         @sio.on('end-recording', namespace='/audio')
-        def end_recording():
+        def end_recording(sid):
             """Stop recording audio from the client."""
             mumble.users.myself.mute()
 
