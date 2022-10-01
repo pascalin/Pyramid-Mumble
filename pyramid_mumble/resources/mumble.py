@@ -33,9 +33,10 @@ class MumbleSessionFactory:
                 debug=False,
             )
             mumble.set_application_string("Pyramid-Mumble")
+            # mumble.start()
             self.connections[user.email] = mumble
             self.mumble = mumble
-            mumble.start()
+            # self.mumble_user = mumble.users.myself
 
     def get_active_connections(self):
         return len([_ for _ in self.connections.values() if _.is_ready()])

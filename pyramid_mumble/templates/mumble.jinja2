@@ -3,7 +3,7 @@
 {% block header %}
     <div class="header row">
         <div class="col text-center">
-            <h2><span class="font-semi-bold">{{ mumble_channel }} Conference Room</span></h2>
+            <h2><span class="font-semi-bold"><em>{{ mumble_user['name'] }}<em></em> at {{ mumble_channel['name'] }} Conference Room</span></h2>
         </div>
     </div>
 {% endblock %}
