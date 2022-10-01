@@ -17,6 +17,7 @@
 */
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
+localStorage.debug = '*';
 
 var audioContext = new AudioContext();
 var audioInput = null,
@@ -27,6 +28,12 @@ var rafID = null;
 var analyserContext = null;
 var canvasWidth, canvasHeight;
 var socketio = io.connect(location.origin + '/audio', {transports: ['websocket']});
+
+
+socketio.on('my_response', function(msg) {
+    console.log('Received: ' + msg.data);
+});
+
 
 socketio.on('add-wavefile', function(url) {
     // add new recording to page
