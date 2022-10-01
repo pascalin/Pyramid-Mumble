@@ -14,14 +14,15 @@
         <p>
             <span class="font-bold">Organization</span>: <span class="font-normal">{{ profile.organization }}</span><br>
             <span class="font-bold">Location</span>: <span class="font-normal">{% if profile.state %}{{ profile.state }}, {% endif %}{{ profile.country }}</span><br>
+            <small>(times and dates are shown in the time zone you configured in the settings)</small>
         </p>
     </div>
     <div {% if request.identity == profile %}class="col-md-5"{% else %}class="col-md-9"{% endif %}>
         {% if profile.is_speaker %}
-        <h3>{% if request.identity == profile %}Your schedule{% else %}Schedule{% endif %}</h3>
+            <h3>{% if request.identity == profile %}Your schedule{% else %}Schedule{% endif %}<br></h3>
         <ul>
         {% for session in sessions %}
-            <li><a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a> on {{ session.start_time }}</li>
+            <li><a href="{{ request.route_url('session', session_id=session['id']) }}"><strong><em>{{ session['title'] }}</em></strong></a> on {{ session['start_time'] }}</li>
         {% endfor %}
         </ul>
         {% endif %}

@@ -21,14 +21,16 @@ from .. import models
 from ..forms import admin
 
 import datetime
+import pytz
 import itertools
 import unidecode
 
 
-
-
 @view_config(route_name='schedule', renderer='pyramid_mumble:templates/schedule.jinja2')
 def schedule_view(request):
+    detailed = False
+    if 'detailed' in request.GET:
+        detailed = True
     year = request.matchdict.get('year')
     month = request.matchdict.get('month')
     day = request.matchdict.get('day')
@@ -43,8 +45,9 @@ def schedule_view(request):
     for track in tracks:
         # track_sessions = request.dbsession.query(models.Session).filter_by(track_id=track.id)
         sessions.extend(track.sessions)
+    sessions.sort(key=lambda s:s.start_time)
 
-    return {'tracks': tracks, 'sessions': sessions, 'project': project, 'schedule_date': ""}
+    return {'tracks': tracks, 'sessions': sessions, 'project': project, 'schedule_date': "", 'detailed': detailed}
 
 
 
@@ -61,7 +64,22 @@ def session_view(request):
     if not session:
         raise HTTPNotFound()
 
-    return {'session': session, 'project': project}
+    tz_local = pytz.timezone("America/Mexico_City")
+    if request.identity.timezone:
+        tz = pytz.timezone(request.identity.timezone)
+    else:
+        tz = tz_local
+    s = {
+        'title': str(session),
+        'track': session.track,
+        'start_time': tz_local.localize(session.start_time).astimezone(tz=tz),
+        'end_time': tz_local.localize(session.end_time).astimezone(tz=tz),
+        'description': session.description,
+        'activities': session.activities,
+    }
+
+
+    return {'session': s, 'project': project}
 
 
 @view_config(route_name='edit_session', renderer='pyramid_mumble:templates/admin_sessions.jinja2', permission='admin')

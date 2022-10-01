@@ -45,6 +45,9 @@ def signin_view(request):
 
 @view_config(route_name='signup', renderer='pyramid_mumble:templates/signin.jinja2', permission=NO_PERMISSION_REQUIRED)
 def signup_view(request):
+    if request.is_authenticated:
+        raise HTTPSeeOther(request.route_path("profile", uid=request.identity.id))
+
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
@@ -93,8 +96,20 @@ def signup_view(request):
                                               
                            To access the conference site enter: {request.route_url('login')}
                            
-                           ( Your password is: {password} )
-                          """)
+                           Employing the following password:
+                            
+                            {password}
+                          """,
+                          html=f"""<p>Dear <strong>{realname}</strong>,<br>
+                          you have been successfully registered to {project}.</p>
+                          <p>The workshop will take place from October 3-7.<br>Briefly, you will receive a confirmation
+                           email with more details for logging into the conference website and to make some preparations
+                           in order to enhance your interactions during the conference.</p>
+                           <p>To access the conference site enter: <a href="{request.route_url('login')}">{request.route_url('login')}</a><br>
+                           Employing the following password:<br>
+                            <strong>{password}</strong></p>
+                           """,
+                          )
 
         request.mailer.send(message)
 
@@ -170,7 +185,7 @@ def profile_list_view(request):
     else:
         project = "A Pyramid Mumble Site"
 
-    profiles = request.dbsession.query(models.MumbleUser).filter_by(is_speaker=True).all()
+    profiles = request.dbsession.query(models.MumbleUser).filter_by(is_speaker=True).order_by("realname").all()
 
     return {'profile_list': profiles, 'project': project}
 
@@ -187,10 +202,26 @@ def profile_view(request):
         project = "A Pyramid Mumble Site"
 
     profile = request.dbsession.query(models.MumbleUser).filter_by(id=uid).first()
+    if not profile:
+        raise HTTPNotFound()
     country = pycountry.countries.lookup(profile.country)
     if not profile:
         raise HTTPNotFound()
-    sessions = {activity.session for activity in profile.activities}
+
+    sessions = []
+    tz_local = pytz.timezone("America/Mexico_City")
+    if request.identity.timezone:
+        tz = pytz.timezone(request.identity.timezone)
+    else:
+        tz = tz_local
+    for activity in profile.activities:
+        session = {
+            'id': activity.session.id,
+            'title': str(activity.session),
+            'start_time': tz_local.localize(activity.session.start_time).astimezone(tz=tz),
+            'end_time': tz_local.localize(activity.session.end_time).astimezone(tz=tz),
+        }
+        sessions.append(session)
 
     return {'profile': profile, 'sessions': sessions, 'country': country,'project': project}
 

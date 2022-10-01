@@ -4,6 +4,8 @@
     <div class="header row">
         <div class="col text-center">
             <h2><span class="font-semi-bold">Schedule</span></h2>
+            <p><small>(times and dates are shown in the local timezone)</small></p>
+            <p>{% if detailed %}See <a href="{{ request.route_path('schedule') }}">simplified</a> version.{% else %}See <a href="{{ request.route_path('schedule') }}?detailed">detailed version.{% endif %}</p>
         </div>
       <div class="col text-center">
             <h3><span class="font-semi-bold">{{ schedule_date }}</span></h3>
@@ -14,15 +16,32 @@
 {% block content %}
     {% if sessions %}
     <div class="content row">
-        <div class="col-md-3"></div>
     {% for day, day_group in sessions|groupby('start_time.day') %}
-        <div class="col">
+        <div {% if detailed %}class="col"{% else %}class="col-md-2"{% endif %}>
             <h4 class="text-center">{{ day_group[0].start_time.strftime("%a %-d, %B") }}</h4>
             <ul>
         {% for hour, list in day_group|groupby('start_time.hour') %}
+            {% if detailed %}
             {% for session in list %}
-               <li><a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a></li>
+                <li><span class="mce-i-underline">{{ session.start_time.strftime("%H:%M") }} &ndash; {{ session.end_time.strftime("%H:%M") }}</span> | <a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a>
+                <ul>
+                {% for activity in session.activities %}
+                    <li><a href="{{ request.route_path('activity', activity_id=activity.id) }}"><strong><em>{{ activity.title }}</em></strong></a>
+                    <ul>
+                    {% for profile in activity.performers %}
+                    <li><a href="{{ request.route_path('profile', uid=profile.id) }}">{{ profile.realname }}</a></li>
+                    {% endfor %}
+                    </ul>
+                    </li>
+                {% endfor %}
+                </ul>
+                </li>
             {% endfor %}
+            {% else %}
+            {% for session in list %}
+               <li><small>{{ session.start_time.strftime("%H:%M") }}</small><br><a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a></li>
+            {% endfor %}
+            {% endif %}
         {% endfor %}
             </ul>
         </div>
