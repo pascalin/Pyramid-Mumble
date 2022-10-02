@@ -76,7 +76,6 @@ def signup_view(request):
         # username = f"{name_parts[-1]}_{name_parts[0]}"
         password = security.random_password(hashed=False)
         hashed_password = security.hash_password(password)
-        cert, key = security.x509.generate_selfsigned_cert(request.identity, dest_dir=os.path.join(request.registry.settings['mumble.storage'], email))
 
         user = models.MumbleUser(
             realname=realname,
@@ -87,9 +86,13 @@ def signup_view(request):
             email=appstruct['user']['email'],
             language=appstruct['user']['language'],
             password=hashed_password,
-            certificate=cert,
-            privkey=key,
         )
+        dest_dir = os.path.join(request.registry.settings['mumble.storage'], email)
+        parent_dir = "/".join(os.path.split(dest_dir)[:-1])
+        if not os.path.isdir(dest_dir) and os.path.exists(parent_dir):
+            os.makedirs(dest_dir)
+
+        user.certificate, user.privkey = security.x509.generate_selfsigned_cert(user, dest_dir=dest_dir)
         request.dbsession.add(user)
 
         # project = "A Triple Helix: metaphor, society, and the science of evolution"
