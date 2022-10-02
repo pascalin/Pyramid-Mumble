@@ -8,6 +8,7 @@ def includeme(config):
     config.add_route('signin', '/signin/')
     config.add_route('signup', '/signup/')
     config.add_route('schedule', '/schedule/')
+    config.add_route('edit_meeting', '/settings/')
     config.add_route('session', '/session/{session_id:\d+}/')
     config.add_route('edit_session', '/session/{session_id:\d+}/edit/')
     config.add_route('activity', '/activity/{activity_id:\d+}/')

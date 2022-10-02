@@ -18,12 +18,70 @@ from pyramid_captcha import Captcha
 
 from .. import security
 from .. import models
-from ..forms import admin
+from ..forms import meeting as meeting_forms
 
 import datetime
 import pytz
 import itertools
 import unidecode
+
+
+@view_config(route_name='edit_meeting', renderer='pyramid_mumble:templates/admin_meeting.jinja2', permission='admin')
+def meeting_edit(request):
+    meeting = request.dbsession.query(models.Meeting).first()
+    if meeting:
+        project = meeting.title
+        website = meeting.website
+    else:
+        raise HTTPNotFound()
+
+    appstruct = {
+        'id': meeting.id,
+        'title': meeting.title,
+        'description': meeting.description,
+        'website': meeting.website,
+        'start_time': meeting.start_time,
+        'end_time': meeting.end_time,
+        'timezone': meeting.timezone,
+        'tracks': [{'id': track.id, 'title':track.title, 'description':track.description} for track in meeting.tracks],
+    }
+
+    meeting_schema = meeting_forms.MeetingSchema().bind(timezone_default=meeting.timezone)
+    form = Form(meeting_schema, buttons=[Button('submit',)])
+
+    if 'submit' in request.POST:
+        controls = request.POST.items()
+        try:
+            appstruct = form.validate(controls)
+        except ValidationFailure as e:
+            return {'meeting_form': e.render(), 'meeting': meeting, 'project': project, 'website': website, 'appstruct': appstruct}
+
+        if meeting.title != appstruct['title']:
+            meeting.title = appstruct['title']
+        if meeting.website != appstruct['website']:
+            meeting.website = appstruct['website']
+        if meeting.timezone != appstruct['timezone']:
+            meeting.timezone = appstruct['timezone']
+        if meeting.description != appstruct['description']:
+            meeting.description = appstruct['description']
+        if meeting.start_time != appstruct['start_time']:
+            meeting.start_time = appstruct['start_time']
+        if meeting.end_time != appstruct['end_time']:
+            meeting.end_time = appstruct['end_time']
+        for track in appstruct['tracks']:
+            if not track['id']:
+                new_track = models.Track(title=track['title'], description=track['description'], meeting_id=meeting.id)
+                request.dbsession.add(new_track)
+            else:
+                extant_track = request.dbsession.query(models.Track).filter_by(id=track['id'], meeting_id=meeting.id).one()
+                if extant_track.title != track['title']:
+                    extant_track.title = track['title']
+                if extant_track.description != track['description']:
+                    extant_track.description = track['description']
+
+        return HTTPSeeOther(request.route_path("home"))
+
+    return {'meeting_form': form.render(appstruct=appstruct), 'meeting': meeting, 'project': project, 'website': website}
 
 
 @view_config(route_name='schedule', renderer='pyramid_mumble:templates/schedule.jinja2')
@@ -38,8 +96,10 @@ def schedule_view(request):
     tracks = request.dbsession.query(models.Track).filter_by(meeting_id=meeting.id)
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
     sessions = []
 
     for track in tracks:
@@ -47,7 +107,7 @@ def schedule_view(request):
         sessions.extend(track.sessions)
     sessions.sort(key=lambda s:s.start_time)
 
-    return {'tracks': tracks, 'sessions': sessions, 'project': project, 'schedule_date': "", 'detailed': detailed}
+    return {'tracks': tracks, 'sessions': sessions, 'project': project, 'website': website, 'schedule_date': "", 'detailed': detailed}
 
 
 
@@ -56,8 +116,10 @@ def session_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     session_id = request.matchdict.get('session_id')
     session = request.dbsession.query(models.Session).filter_by(id=session_id).first()
@@ -79,7 +141,7 @@ def session_view(request):
     }
 
 
-    return {'session': s, 'project': project}
+    return {'session': s, 'project': project, 'website': website}
 
 
 @view_config(route_name='edit_session', renderer='pyramid_mumble:templates/admin_sessions.jinja2', permission='admin')
@@ -87,8 +149,10 @@ def session_edit_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     session_id = request.matchdict.get('session_id')
     session = request.dbsession.query(models.Session).filter_by(id=session_id).first()
@@ -113,7 +177,7 @@ def session_edit_view(request):
         try:
             appstruct = form.validate(controls)
         except ValidationFailure as e:
-            return {'session_form': e.render(), 'session': session, 'project': project, 'appstruct': appstruct}
+            return {'session_form': e.render(), 'session': session, 'project': project, 'website': website, 'appstruct': appstruct}
 
         if session.title != appstruct['title']:
             session.title = appstruct['title']
@@ -138,7 +202,7 @@ def session_edit_view(request):
 
         return HTTPSeeOther(request.route_path("session", session_id=session.id))
 
-    return {'session_form': form.render(appstruct=appstruct), 'session': session, 'project': project}
+    return {'session_form': form.render(appstruct=appstruct), 'session': session, 'project': project, 'website': website}
 
 
 @view_config(route_name='activity', renderer='pyramid_mumble:templates/activity.jinja2')
@@ -146,15 +210,17 @@ def activity_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     activity_id = request.matchdict.get('activity_id')
     activity = request.dbsession.query(models.Activity).filter_by(id=activity_id).first()
     if not activity:
         raise HTTPNotFound()
 
-    return {'activity': activity, 'project': project}
+    return {'activity': activity, 'project': project, 'website': website}
 
 
 @view_config(route_name='edit_activity', renderer='pyramid_mumble:templates/admin_activities.jinja2', permission='admin')
@@ -162,6 +228,7 @@ def activity_edit_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
 
@@ -190,7 +257,7 @@ def activity_edit_view(request):
         try:
             appstruct = form.validate(controls)
         except ValidationFailure as e:
-            return {'activity_form': e.render(), 'activity': activity, 'project': project,}
+            return {'activity_form': e.render(), 'activity': activity, 'project': project, 'website': website,}
 
         if activity.title != appstruct['title']:
             activity.title = appstruct['title']
@@ -209,4 +276,4 @@ def activity_edit_view(request):
 
         return HTTPSeeOther(request.route_path("session", session_id=activity.session_id))
 
-    return {'activity_form': form.render(appstruct=appstruct), 'activity': activity, 'project': project}
+    return {'activity_form': form.render(appstruct=appstruct), 'activity': activity, 'project': project, 'website': website}

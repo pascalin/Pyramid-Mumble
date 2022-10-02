@@ -30,8 +30,10 @@ def login_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     next_url = request.params.get('next', request.referrer)
     login_url = request.route_url('login')
@@ -47,7 +49,7 @@ def login_view(request):
         try:
             appstruct = form.validate(controls)
         except ValidationFailure as e:
-            return {'login_form': e.render(), 'project': project}
+            return {'login_form': e.render(), 'project': project, 'website': website}
 
         email = appstruct['login']['email']
         password = appstruct['login']['password']
@@ -65,7 +67,7 @@ def login_view(request):
         request.response.status = 400
         return HTTPSeeOther(request.route_path('failure', action=('login',)))
 
-    return {'login_form': form.render(), 'additions': 0, 'project': project}
+    return {'login_form': form.render(), 'additions': 0, 'project': project, 'website': website}
 
 
 @view_config(route_name='recover', renderer='pyramid_mumble:templates/recover.jinja2', permission=NO_PERMISSION_REQUIRED)
@@ -73,8 +75,10 @@ def recover_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     form = Form(users.email_schema, buttons=[Button('submit', 'Recover')])
     # form['captcha'].validator = colander.Function(lambda val: Captcha(request).validate(val))
@@ -87,7 +91,7 @@ def recover_view(request):
         try:
             appstruct = form.validate(controls)
         except ValidationFailure as e:
-            return {'recover_form': e.render(), 'project': project}
+            return {'recover_form': e.render(), 'project': project, 'website': website}
 
         email = appstruct['email']
 
@@ -133,7 +137,7 @@ def recover_view(request):
 
         return HTTPSeeOther(location=request.route_path('login'))
 
-    return {'recover_form': form.render(), 'additions': 0, 'project': project}
+    return {'recover_form': form.render(), 'additions': 0, 'project': project, 'website': website}
 
 
 @view_config(route_name='logout')
@@ -149,23 +153,27 @@ def forbidden_view(exc, request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     if not request.is_authenticated:
         next_url = request.route_url('login', _query={'next': request.url})
         return HTTPSeeOther(location=next_url)
 
     request.response.status = 403
-    return {'project': project}
+    return {'project': project, 'website': website}
 
 @view_config(route_name='settings', renderer='pyramid_mumble:templates/settings.jinja2')
 def settings_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     user = request.identity
     realname = user.realname
@@ -194,7 +202,7 @@ def settings_view(request):
         try:
             appstruct = form.validate(controls)
         except ValidationFailure as e:
-            return {'settings_form': e.render(), 'project': project}
+            return {'settings_form': e.render(), 'project': project, 'website': website}
 
         user = request.dbsession.query(models.MumbleUser).filter_by(email=request.identity.email).first()
         if user is not None:
@@ -220,4 +228,4 @@ def settings_view(request):
             #     user.publickey = new_public_key.encode(),
             return HTTPSeeOther(location=request.path, headers=headers)
 
-    return {'settings_form': form.render(), 'project': project}
+    return {'settings_form': form.render(), 'project': project, 'website': website}

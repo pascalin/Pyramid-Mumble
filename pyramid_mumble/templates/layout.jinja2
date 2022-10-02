@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{request.static_url('deform:static/css/form.css')}}" type="text/css" />
     <link href="{{request.static_url('pyramid_mumble:static/theme.css')}}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="{{ request.static_url('pyramid_mumble:static/mumble.css') }}">
+{#    <link rel="stylesheet" href="{{ request.static_url('pyramid_mumble:static/mumble.css') }}">#}
 
     <!-- HTML5 shiv and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -61,12 +61,14 @@
             <p>No content</p>
         {% endblock content %}
         <div class="row">
-          <div class="links col-md-3 text-center">
-            <ul>
-              <li><i class="glyphicon glyphicon-home icon-muted"></i> <a href="https://github.com/pascalin/Pyramid-Mumble">Pyramid Mumble</a></li>
-            </ul>
+          <div class="links col-md-6 text-center">
+          <p>
+            {% if website %}
+                <span><i class="glyphicon glyphicon-home icon-muted"></i> <a href="{{ website }}">{{ project }}</a></span>{% endif %}
+              <span><i class="glyphicon glyphicon-wrench icon-muted"></i> <a href="https://github.com/pascalin/Pyramid-Mumble">Pyramid Mumble</a></span>
+            </p>
           </div>
-          <div class="copyright col-md-9 text-right">
+          <div class="copyright col-md-6 text-right">
               <p class="small">Copyright &copy; David Suárez Pascal</p>
           </div>
         </div>

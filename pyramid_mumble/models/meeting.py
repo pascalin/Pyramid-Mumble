@@ -9,6 +9,7 @@ class Meeting(Base):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     title = sqlalchemy.Column(sqlalchemy.Text)
     description = sqlalchemy.Column(sqlalchemy.Text, default="")
+    website = sqlalchemy.Column(sqlalchemy.Text, default="")
     start_time = sqlalchemy.Column(sqlalchemy.DateTime(timezone=True))
     end_time = sqlalchemy.Column(sqlalchemy.DateTime(timezone=True))
     timezone = sqlalchemy.Column(sqlalchemy.Text)

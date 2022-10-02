@@ -7,8 +7,10 @@ def notfound_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     request.response.status = 404
-    return {'project': project}
+    return {'project': project, 'website': website}

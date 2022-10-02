@@ -24,8 +24,10 @@ def mumble_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
     mumble = request.context.mumble
     if not mumble.is_alive():
         mumble.start()
@@ -67,7 +69,7 @@ def mumble_view(request):
 
     mumble_user = mumble.users.myself
 
-    return {'project': project, 'mumble_channel': channel, 'mumble_user': mumble_user,}
+    return {'project': project, 'website': website, 'mumble_channel': channel, 'mumble_user': mumble_user,}
 
 
 @view_config(route_name='mumble_leave')

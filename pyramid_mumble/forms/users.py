@@ -5,9 +5,9 @@ from .widgets import CaptchaWidget
 
 import pycountry, pytz
 
-countries = [(c.alpha_2, c.name) for c in pycountry.countries]
+countries = [('', '')] + [(c.alpha_2, c.name) for c in pycountry.countries]
 country_codes = [c[0] for c in countries]
-timezones = [(tz, tz) for tz in pytz.common_timezones]
+timezones = [('', '')] + [(tz, tz) for tz in pytz.common_timezones]
 tmpstore = FileUploadTempStore()
 
 @colander.deferred
