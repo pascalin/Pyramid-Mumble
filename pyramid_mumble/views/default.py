@@ -11,7 +11,7 @@ from .. import security
 from .. import models
 from ..forms import users
 
-import datetime, pytz, pycountry
+import datetime, pytz, pycountry, os
 
 
 @view_config(route_name='home', renderer='pyramid_mumble:templates/home.jinja2', permission=NO_PERMISSION_REQUIRED)
@@ -71,10 +71,12 @@ def signup_view(request):
             return {'register_form': e.render(), 'project': project, 'website': website}
 
         realname = appstruct['user']['realname']
+        email = appstruct['user']['email']
         # name_parts = [part.lower() for part in realname.split()]
         # username = f"{name_parts[-1]}_{name_parts[0]}"
         password = security.random_password(hashed=False)
         hashed_password = security.hash_password(password)
+        cert, key = security.x509.generate_selfsigned_cert(request.identity, dest_dir=os.path.join(request.registry.settings['mumble.storage'], email))
 
         user = models.MumbleUser(
             realname=realname,
@@ -85,6 +87,8 @@ def signup_view(request):
             email=appstruct['user']['email'],
             language=appstruct['user']['language'],
             password=hashed_password,
+            certificate=cert,
+            privkey=key,
         )
         request.dbsession.add(user)
 

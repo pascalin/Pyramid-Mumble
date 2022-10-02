@@ -14,6 +14,8 @@ def includeme(config):
     config.add_route('activity', '/activity/{activity_id:\d+}/')
     config.add_route('edit_activity', '/activity/{activity_id:\d+}/edit/')
     config.add_route('settings', 'profile/settings/')
+    config.add_route('mumble_settings', 'profile/mumble/', factory='pyramid_mumble.resources.mumble.MumbleSessionFactory')
+    config.add_route('mumble_export', 'profile/mumble/export/')
     config.add_route('profile_list', 'profile/')
     config.add_route('profile', 'profile/{uid}/')
     config.add_route('success_signin', '/signup/success/')

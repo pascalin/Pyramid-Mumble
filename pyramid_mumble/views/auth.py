@@ -1,6 +1,7 @@
 import deform.widget
 from pyramid.csrf import new_csrf_token
-from pyramid.httpexceptions import HTTPSeeOther
+from pyramid.httpexceptions import HTTPSeeOther, HTTPNotFound
+from pyramid.response import Response, FileResponse
 from pyramid.security import (
     remember,
     forget,
@@ -23,7 +24,9 @@ from ..forms import users
 import datetime
 import itertools
 import unidecode
-
+import tempfile
+import logging
+import os
 
 @view_config(route_name='login', renderer='pyramid_mumble:templates/login.jinja2', permission=NO_PERMISSION_REQUIRED)
 def login_view(request):
@@ -186,7 +189,7 @@ def settings_view(request):
     choices = [('', "---")] + [(x,x) for x in alternatives if x != username and not x.startswith(name_parts[0])]
     # choices = [('', "---")] + [(x, x) for x in alternatives if not x.startswith(name_parts[0])]
 
-    schema = users.MumbleSettingsSchema().bind(
+    schema = users.UserSettingsSchema().bind(
         query=request.dbsession.query(models.MumbleUser),
         alternatives=alternatives,
         username_default=username,
@@ -211,7 +214,6 @@ def settings_view(request):
             new_username = appstruct['username']
             new_password = appstruct['password']
             new_timezone = appstruct['timezone']
-            # new_public_key = appstruct['publickey']
 
             if new_language and new_language != user.language:
                 user.language = new_language
@@ -224,8 +226,85 @@ def settings_view(request):
                 headers = remember(request, user.id)
             if new_timezone and new_timezone != user.timezone:
                 user.timezone = new_timezone
-            # if new_public_key:
-            #     user.publickey = new_public_key.encode(),
             return HTTPSeeOther(location=request.path, headers=headers)
 
     return {'settings_form': form.render(), 'project': project, 'website': website}
+
+
+@view_config(route_name='mumble_settings', renderer='pyramid_mumble:templates/mumble_settings.jinja2')
+def mumble_settings_view(request):
+    meeting = request.dbsession.query(models.Meeting).first()
+    if meeting:
+        project = meeting.title
+        website = meeting.website
+    else:
+        project = "A Pyramid Mumble Site"
+        website = ''
+
+    user = request.identity
+    email = user.email
+    username = user.username
+
+    # name_parts = [unidecode.unidecode(part.lower()) for part in realname.split() if len(part) > 2]
+    # alternatives = ["_".join(choice) for choice in itertools.permutations(name_parts, 2)]
+    # choices = [('', "---")] + [(x,x) for x in alternatives if x != username and not x.startswith(name_parts[0])]
+    # choices = [('', "---")] + [(x, x) for x in alternatives if not x.startswith(name_parts[0])]
+
+    # schema = users.UserSettingsSchema().bind(
+    #     query=request.dbsession.query(models.MumbleUser),
+    #     alternatives=alternatives,
+    #     username_default=username,
+    #     language_default=language,
+    #     timezone_default = timezone,
+    # )
+    # form = Form(schema, buttons=[Button('submit', 'Save settings')])
+    # # form['username'].validator = colander.OneOf(choices)
+    # form['username'].widget = deform.widget.SelectWidget(values=choices)
+
+    form = Form(users.MumbleSettingsSchema(), buttons=[Button('submit', 'Save settings')])
+    appstruct = {
+        'email': request.identity.email,
+    }
+
+    if 'submit' in request.POST:
+        controls = request.POST.items()
+        try:
+            appstruct = form.validate(controls)
+        except ValidationFailure as e:
+            return {'mumble_form': e.render(), 'project': project, 'website': website}
+
+        user = request.dbsession.query(models.MumbleUser).filter_by(email=request.identity.email).first()
+        if user is None:
+            raise HTTPNotFound()
+        dest_dir = os.path.join(request.registry.settings['mumble.storage'], user.email)
+        new_privkey = appstruct['privkey']
+
+        if new_privkey:
+            logging.warning(f"Received {new_privkey} to store")
+            p12 = new_privkey['fp']
+            user.certificate, user.privkey = security.x509.import_pkcs12(data=p12.read(), dest_dir=dest_dir)
+            if request.context.mumble.is_alive():
+                request.context.mumble.stop()
+        return HTTPSeeOther(location=request.path)
+
+    return {'mumble_form': form.render(appstruct), 'project': project, 'website': website}
+
+
+@view_config(route_name="mumble_export")
+def mumble_get_key(request):
+    user = request.identity
+#    response = Response(content_type='application/x-pkcs12')
+    with tempfile.NamedTemporaryFile(prefix="PKCS12_Export_%s" % datetime.datetime.now(),
+                            suffix='.p12', delete=False) as f:
+        f.write(security.x509.export_pkcs12(user))
+        # this is where I usually put stuff in the file
+        # response.app_iter = f
+        # response.headers['Content-Disposition'] = (f"attachment; filename={user.username}.p12")
+        # return response
+    response = FileResponse(
+        f.name,
+        request=request,
+        content_type='application/x-pkcs12'
+    )
+    response.headers['Content-Disposition'] = (f"attachment; filename={user.username}.p12")
+    return response

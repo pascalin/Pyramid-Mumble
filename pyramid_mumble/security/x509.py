@@ -88,3 +88,36 @@ def generate_selfsigned_cert(user, key=None, size=2048, password=None, dest_dir=
         f.write(cert.public_bytes(serialization.Encoding.PEM))
 
     return (crt_path, key_path)
+
+
+def import_pkcs12(data, dest_dir, password=None):
+    parent_dir = "/".join(os.path.split(dest_dir)[:-1])
+    if not os.path.isdir(dest_dir) and os.path.exists(parent_dir):
+        os.makedirs(dest_dir)
+
+    private_key, certificate, additional_certificates = serialization.pkcs12.load_key_and_certificates(data, password)
+    key_path = os.path.join(dest_dir, "private_key.pem")
+    cert_path = os.path.join(dest_dir, "certificate.pem")
+
+    with open(key_path, 'wb') as privkey_file:
+        privkey_file.write(private_key.private_bytes(
+                        encoding=serialization.Encoding.PEM,
+                        format=serialization.PrivateFormat.TraditionalOpenSSL,
+                        encryption_algorithm=serialization.NoEncryption(),
+        ))
+    with open(cert_path, 'wb') as certificate_file:
+        certificate_file.write(certificate.public_bytes(serialization.Encoding.PEM))
+
+    return (cert_path, key_path)
+
+def export_pkcs12(user):
+    cert = cryptography.x509.load_pem_x509_certificate(open(user.certificate, 'rb').read())
+    key = serialization.load_pem_private_key(open(user.privkey, 'rb').read(), None)
+
+    # p12 = serialization.pkcs12.serialize_key_and_certificates(
+    #     bytes(user.email, encoding='utf8'), key, cert, cas=None, encryption_algorithm=serialization.NoEncryption(),
+    # )
+
+    return serialization.pkcs12.serialize_key_and_certificates(
+        bytes(user.email, encoding='utf8'), key, cert, cas=None, encryption_algorithm=serialization.NoEncryption(),
+    )
