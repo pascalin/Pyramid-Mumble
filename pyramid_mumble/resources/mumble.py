@@ -30,7 +30,7 @@ class MumbleSessionFactory:
                 certfile=cert,
                 keyfile=key,
                 stereo=True,
-                debug=False,
+                debug=request.registry.settings['mumble.debug'].lower() == 'true',
             )
             mumble.set_application_string("Pyramid-Mumble")
             # mumble.start()
