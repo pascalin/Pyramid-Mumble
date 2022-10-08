@@ -242,7 +242,17 @@ def profile_view(request):
         }
         sessions.append(session)
 
-    return {'profile': profile, 'sessions': sessions, 'country': country,'project': project, 'website': website}
+    mumble_url = f"{request.registry.settings['mumble.url']}?address={request.registry.settings['mumble.web.url']}&port=443&username={request.identity.username or request.identity.realname}&channelName={request.registry.settings['mumble.channel']}/{request.identity.language=='es' and 'Spanish' or 'English'}"
+    zoom_url = request.registry.settings['zoom.url']
+    slides_url = request.registry.settings['slides.url']
+    project_url = request.registry.settings['project.url']
+
+    return {'profile': profile, 'sessions': sessions, 'country': country,'project': project, 'website': website,
+            'mumble_url': mumble_url,
+            'zoom_url': zoom_url,
+            'slides_url': slides_url,
+            'project_url': project_url,
+            }
 
 
 db_err_msg = """\

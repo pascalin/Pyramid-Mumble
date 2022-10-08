@@ -26,7 +26,15 @@
         {% endfor %}
         </ul>
         {% endif %}
-    </div>
+	{% if request.identity == profile %}
+	<h3>Join the sessions</h3>
+    	<p>To connect to the sessions, please use the following links:</p><ul><li><a href="{{ mumble_url }}"><strong>Mumble</strong> sessions</a></li><li><a href="{{ zoom_url }}"><strong>Zoom</strong> sessions</a></li></ul>
+	<p><strong>To see</strong> the slides during the sessions, you can use the following link: <a href="{{ slides_url }}">Slides</a></p>
+        {% if profile.is_speaker %}
+	<p><strong>To share</strong> your slides during the sessions, you can go to the following address: <a href="{{ project_url }}">Share your screen</a></p>
+	{%endif%}
+	{%endif%}
+</div>
     {% if request.identity == profile %}
     <div class="col-md-4">
         <h3>Activities you follow</h3>
