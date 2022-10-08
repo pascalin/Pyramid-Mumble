@@ -13,8 +13,10 @@ def roles_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     profiles = request.dbsession.query(models.MumbleUser).all()
     roles = []
@@ -36,7 +38,7 @@ def roles_view(request):
         try:
             appstruct = form.validate(controls)
         except ValidationFailure as e:
-            return {'useradmin_form': e.render(), 'project': project}
+            return {'useradmin_form': e.render(), 'project': project, 'website': website}
         updated_profiles = [p for p in appstruct['roles'] if p['update']]
         for update in updated_profiles:
             profile = request.dbsession.query(models.MumbleUser).filter_by(id=update['uid']).first()
@@ -49,4 +51,4 @@ def roles_view(request):
 
             return HTTPSeeOther(request.route_path("profile_list"))
 
-    return {'useradmin_form': form.render(appstruct=appstruct), 'profile_list': profiles, 'project': project}
+    return {'useradmin_form': form.render(appstruct=appstruct), 'profile_list': profiles, 'project': project, 'website': website}

@@ -11,7 +11,7 @@ from .. import security
 from .. import models
 from ..forms import users
 
-import datetime, pytz, pycountry
+import datetime, pytz, pycountry, os
 
 
 @view_config(route_name='home', renderer='pyramid_mumble:templates/home.jinja2', permission=NO_PERMISSION_REQUIRED)
@@ -19,8 +19,10 @@ def main_view(request):
     meeting = query = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     tz_mexico = pytz.timezone('America/Mexico_City')
     start_time = datetime.datetime(2022, 10, 3, 9, 0, 0, 0, tzinfo=tz_mexico)
@@ -35,7 +37,7 @@ def main_view(request):
     except SQLAlchemyError:
         return Response(db_err_msg, content_type='text/plain', status=500)
     return {'users': len(users), 'days': remaining.days, 'speakers': 39,
-            'project': project}
+            'project': project, 'website': website}
 
 
 @view_config(route_name='signin', permission=NO_PERMISSION_REQUIRED)
@@ -51,8 +53,10 @@ def signup_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     form = Form(users.user_schema, buttons=[Button('submit','Sign in')])
     # form['user']['captcha'].validator = colander.Function(lambda val: Captcha(request).validate(val) is None)
@@ -64,9 +68,10 @@ def signup_view(request):
         try:
             appstruct = form.validate(controls)
         except ValidationFailure as e:
-            return {'register_form': e.render(), 'project': project}
+            return {'register_form': e.render(), 'project': project, 'website': website}
 
         realname = appstruct['user']['realname']
+        email = appstruct['user']['email']
         # name_parts = [part.lower() for part in realname.split()]
         # username = f"{name_parts[-1]}_{name_parts[0]}"
         password = security.random_password(hashed=False)
@@ -82,6 +87,12 @@ def signup_view(request):
             language=appstruct['user']['language'],
             password=hashed_password,
         )
+        dest_dir = os.path.join(request.registry.settings['mumble.storage'], email)
+        parent_dir = "/".join(os.path.split(dest_dir)[:-1])
+        if not os.path.isdir(dest_dir) and os.path.exists(parent_dir):
+            os.makedirs(dest_dir)
+
+        user.certificate, user.privkey = security.x509.generate_selfsigned_cert(user, dest_dir=dest_dir)
         request.dbsession.add(user)
 
         # project = "A Triple Helix: metaphor, society, and the science of evolution"
@@ -118,7 +129,7 @@ def signup_view(request):
 
         return HTTPSeeOther(location=request.route_path("success_signin"))
 
-    return {'register_form': form.render(), 'additions': 0, 'project': project}
+    return {'register_form': form.render(), 'additions': 0, 'project': project, 'website': website}
 
 
 @view_config(route_name='captcha', permission=NO_PERMISSION_REQUIRED)
@@ -134,8 +145,10 @@ def success_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     session = request.session
     if 'realname' in session and not request.is_authenticated:
@@ -145,7 +158,7 @@ def success_view(request):
         return {
             'realname': realname,
             'action': "signed in",
-            'project': project,
+            'project': project, 'website': website,
             'message': """<p>The workshop will take place from <strong>October 3 to October 7</strong>.</p><p>Briefly, you will receive a confirmation
              email with more details for logging into the conference website and to make some preparations in order to
              enhance your interactions during the conference.</p>"""
@@ -154,17 +167,44 @@ def success_view(request):
         return HTTPSeeOther(request.route_path("home"))
 
 
+@view_config(route_name='failure', renderer='pyramid_mumble:templates/failure.jinja2', permission=NO_PERMISSION_REQUIRED)
+def failure_view(request):
+    action = request.matchdict['action']
+    meeting = request.dbsession.query(models.Meeting).first()
+    if meeting:
+        project = meeting.title
+        website = meeting.website
+    else:
+        project = "A Pyramid Mumble Site"
+        website = ''
+
+    if 'login' in action:
+        message = """<p>Your combination of email and password is not correct. If you are already registered, 
+        please check that you have written your password correctly. Otherwise, please register or contact us by 
+        email. """
+    else:
+        return HTTPSeeOther(request.route_path("home"))
+
+    return {
+        'action': action[0],
+        'message': message,
+        'project': project, 'website': website,
+        }
+
+
 @view_config(route_name='profile_list', renderer='pyramid_mumble:templates/profile_list.jinja2')
 def profile_list_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     profiles = request.dbsession.query(models.MumbleUser).filter_by(is_speaker=True).order_by("realname").all()
 
-    return {'profile_list': profiles, 'project': project}
+    return {'profile_list': profiles, 'project': project, 'website': website}
 
 
 @view_config(route_name='profile', renderer='pyramid_mumble:templates/profile.jinja2')
@@ -175,8 +215,10 @@ def profile_view(request):
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
+        website = meeting.website
     else:
         project = "A Pyramid Mumble Site"
+        website = ''
 
     profile = request.dbsession.query(models.MumbleUser).filter_by(id=uid).first()
     if not profile:
@@ -200,7 +242,17 @@ def profile_view(request):
         }
         sessions.append(session)
 
-    return {'profile': profile, 'sessions': sessions, 'country': country,'project': project}
+    mumble_url = f"{request.registry.settings['mumble.url']}?address={request.registry.settings['mumble.web.url']}&port=443&username={request.identity.username or request.identity.realname}&channelName={request.registry.settings['mumble.channel']}/{request.identity.language=='es' and 'Spanish' or 'English'}"
+    zoom_url = request.registry.settings['zoom.url']
+    slides_url = request.registry.settings['slides.url']
+    project_url = request.registry.settings['project.url']
+
+    return {'profile': profile, 'sessions': sessions, 'country': country,'project': project, 'website': website,
+            'mumble_url': mumble_url,
+            'zoom_url': zoom_url,
+            'slides_url': slides_url,
+            'project_url': project_url,
+            }
 
 
 db_err_msg = """\

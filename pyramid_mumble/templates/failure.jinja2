@@ -3,20 +3,16 @@
 {% block header %}
     <div class="header row">
         <div class="col text-center">
-             <h2><span class="font-semi-bold">Settings</span></h2>
+             <h2><span class="font-semi-bold">{{ action.upper() }} Failure</span></h2>
         </div>
     </div>
 {% endblock %}
 
 {% block content %}
 <div class="content row">
-    <div class="col-md-8">
-      {% if settings_form %}
-         {{ settings_form|safe }}
-      {% endif %}
-      {% if appstruct %}
-      {{ appstruct }}
-      {% endif %}
+    <div class="col-md-3"></div>
+    <div class="success-box col-md-8">
+        {{ message|safe }}
     </div>
 </div>
 {% endblock content %}

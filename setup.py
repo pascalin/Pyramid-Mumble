@@ -29,6 +29,7 @@ requires = [
     'bcrypt',
     'pycountry',
     'unidecode',
+    'gunicorn',
 ]
 
 tests_require = [

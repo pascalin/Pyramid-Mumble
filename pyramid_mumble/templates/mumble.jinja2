@@ -1,0 +1,26 @@
+{% extends "layout.jinja2" %}
+
+{% block header %}
+    <div class="header row">
+        <div class="col text-center">
+            <h2><span class="font-semi-bold"><em>{{ mumble_user['name'] }}<em></em> at {{ mumble_channel['name'] }} Conference Room</span></h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+    <div class="col">
+        <div id="viz">
+            <canvas id="analyser" width="1024" height="500"></canvas>
+            <div id="wavedisplay">
+                <div id="wavefiles">
+                </div>
+            </div>
+        </div>
+        <div id="controls">
+            <img id="record" src="{{ request.static_url('pyramid_mumble:static/mic128.png') }}" onclick="toggleRecording(this);">
+        </div>
+    </div>
+    </div>
+{% endblock %}

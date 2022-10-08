@@ -3,7 +3,8 @@
 {% block header %}
     <div class="header row">
         <div class="col text-center">
-             <h2><span class="font-semi-bold">Settings</span></h2>
+             <h2><span class="font-semi-bold">Mumble Settings</span></h2>
+            <h3><span class="font-semi-bold">Upload your own private key</span></h3>
         </div>
     </div>
 {% endblock %}
@@ -11,8 +12,8 @@
 {% block content %}
 <div class="content row">
     <div class="col-md-8">
-      {% if settings_form %}
-         {{ settings_form|safe }}
+      {% if mumble_form %}
+         {{ mumble_form|safe }}
       {% endif %}
       {% if appstruct %}
       {{ appstruct }}
