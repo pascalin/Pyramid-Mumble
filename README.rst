@@ -51,18 +51,13 @@ Getting Started
 
 In order to enable the websocket part, you will need to use both gunicorn and eventlet:
 
-`env/bin/gunicorn --paste production.ini -b 127.0.0.1:8000 --chdir YOUR_PYRAMID_MUMBLE_PATH -k eventlet -w 1`
+    env/bin/gunicorn --paste production.ini -b 127.0.0.1:8000 --chdir YOUR_PYRAMID_MUMBLE_PATH -k eventlet -w 1
 
-ToDo
+To Do
 ----
 
-- The project is still in an early phase, but it can already self-generate x509 certificates to identify users, or they
-can be uploaded and used to establish the Mumble connection. But the registration and access control to the Murmur server
-still has to be implemented either using pymumble o even better ICE protocol (I already have an ICE mockup, but need to
-include it).
+- The project is still in an early phase, but it can already self-generate x509 certificates to identify users, or they can be uploaded and used to establish the Mumble connection. But the registration and access control to the Murmur server still has to be implemented either using pymumble o even better ICE protocol (I already have an ICE mockup, but need to include it).
 
-- Sound is already being transmitted from the browser to Mumble but with a lot of jitter, so I figure that the rate of
-transfer or something like that need to be modulated for this to work.
+- Sound is already being transmitted from the browser to Mumble but with a lot of jitter, so I figure that the rate of transfer or something like that need to be modulated for this to work.
 
-- Sound from pymumble to the browser is not implemented, but it should be very easy if one looks into the
- websocket to mumble part.
+- Sound from pymumble to the browser is not implemented, but it should be very easy if one looks into the websocket to mumble part.

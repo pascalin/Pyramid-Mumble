@@ -260,7 +260,7 @@ Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
 
 1.  You may need to initialize your database tables with `alembic`.
-    Check your README.txt for descriptions and try to run it.
+    Check your README.rst for descriptions and try to run it.
 
 2.  Your database server may not be running.  Check that the
     database server referred to by the "sqlalchemy.url" setting in
