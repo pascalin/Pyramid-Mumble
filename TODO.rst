@@ -1,0 +1,5 @@
+- Mumble support:
+    - Enable registration of users from Pyramid_Mumble to the configured Mumble server.
+    - Enable transmission of audio output from server to web client in a chosen language through pymumble and socketio.
+    - Enable a talk button to transmit audio input from web client to mumble server.
+    - Enable sharing of screen by web clients through [picklecast](https://github.com/evidlo/picklecast).
