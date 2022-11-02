@@ -51,6 +51,9 @@ Getting Started
 
 In order to enable the websocket part, you will need to use both gunicorn and eventlet:
 
+    env/bin/alembic -c production.ini revision --autogenerate -m "init"
+    env/bin/alembic -c production.ini upgrade head
+    env/bin/initialize_pyramid_mumble_db production.ini
     env/bin/gunicorn --paste production.ini -b 127.0.0.1:8000 --chdir YOUR_PYRAMID_MUMBLE_PATH -k eventlet -w 1
 
 To Do
