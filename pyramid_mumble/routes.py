@@ -22,5 +22,6 @@ def includeme(config):
     config.add_route('failure', '/failure/*action')
     config.add_route('captcha', '/captcha/{captcha_id}.png')
     config.add_route('admin_roles', '/admin/roles/')
+    config.add_route('admin_users', '/admin/users/')
     config.add_route('mumble_join', '/join/*channel', factory='pyramid_mumble.resources.mumble.MumbleSessionFactory')
     config.add_route('mumble_leave', '/leave/', factory='pyramid_mumble.resources.mumble.MumbleSessionFactory')

@@ -8,6 +8,21 @@ from .. import models
 from ..forms import admin
 
 
+@view_config(route_name='admin_users', renderer='pyramid_mumble:templates/admin_users.jinja2', permission='admin')
+def users_view(request):
+    meeting = request.dbsession.query(models.Meeting).first()
+    if meeting:
+        project = meeting.title
+        website = meeting.website
+    else:
+        project = "A Pyramid Mumble Site"
+        website = ''
+
+    users = request.dbsession.query(models.MumbleUser).all()
+    return {'user_list': users, 'project': project,
+            'website': website}
+
+
 @view_config(route_name='admin_roles', renderer='pyramid_mumble:templates/admin_roles.jinja2', permission='admin')
 def roles_view(request):
     meeting = request.dbsession.query(models.Meeting).first()

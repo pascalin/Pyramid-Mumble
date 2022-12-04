@@ -24,6 +24,7 @@ requires = [
     'zope.sqlalchemy',
     'python-socketio',
     'pymumble',
+    'cryptography',
     'deform',
     'pytz',
     'bcrypt',

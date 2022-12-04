@@ -20,7 +20,7 @@ def setup_models(dbsession):
         organization="Apuntia Networks",
         country="MX",
         state="CdMx",
-        email="mumble@hapuntia.com",
+        email="mumble@apuntia.com",
         language="English",
         is_staff=True,
         timezone="America/Mexico_City",
