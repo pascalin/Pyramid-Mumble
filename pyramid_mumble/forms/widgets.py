@@ -10,7 +10,7 @@ class CaptchaWidget(Widget):
             cstruct = ""
         quoted = html.escape(cstruct, quote='"')
         return '<img src="/captcha/{}.png"><br>' \
-               '<input type="text" name="{}" value="{}">'.format(security.random_string(20), field.name, quoted)
+               '<input type="text" name="{}" value="{}" autocomplete="off">'.format(security.random_string(20), field.name, quoted)
 
     def deserialize(self, field, pstruct):
         if pstruct is null:
