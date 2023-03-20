@@ -25,7 +25,8 @@ def main_view(request):
         website = ''
 
     tz_mexico = pytz.timezone('America/Mexico_City')
-    start_time = datetime.datetime(2022, 10, 3, 9, 0, 0, 0, tzinfo=tz_mexico)
+    # start_time = datetime.datetime(2022, 10, 3, 9, 0, 0, 0, tzinfo=tz_mexico)
+    start_time = meeting.start_time
     now = datetime.datetime.now(tz_mexico)
     if now < start_time:
         remaining = start_time - now
@@ -37,7 +38,7 @@ def main_view(request):
     except SQLAlchemyError:
         return Response(db_err_msg, content_type='text/plain', status=500)
     return {'users': len(users), 'days': remaining.days, 'speakers': 39,
-            'project': project, 'website': website}
+            'project': project, 'website': website, 'ongoing': meeting.ongoing}
 
 
 @view_config(route_name='signin', permission=NO_PERMISSION_REQUIRED)
@@ -68,7 +69,7 @@ def signup_view(request):
         try:
             appstruct = form.validate(controls)
         except ValidationFailure as e:
-            return {'register_form': e.render(), 'project': project, 'website': website}
+            return {'register_form': e.render(), 'project': project, 'website': website, 'ongoing': meeting.ongoing}
 
         realname = appstruct['user']['realname']
         email = appstruct['user']['email']
@@ -129,7 +130,7 @@ def signup_view(request):
 
         return HTTPSeeOther(location=request.route_path("success_signin"))
 
-    return {'register_form': form.render(), 'additions': 0, 'project': project, 'website': website}
+    return {'register_form': form.render(), 'additions': 0, 'project': project, 'website': website, 'ongoing': meeting.ongoing}
 
 
 @view_config(route_name='captcha', permission=NO_PERMISSION_REQUIRED)
@@ -161,7 +162,8 @@ def success_view(request):
             'project': project, 'website': website,
             'message': """<p>The workshop will take place from <strong>October 3 to October 7</strong>.</p><p>Briefly, you will receive a confirmation
              email with more details for logging into the conference website and to make some preparations in order to
-             enhance your interactions during the conference.</p>"""
+             enhance your interactions during the conference.</p>""",
+            'ongoing': meeting.ongoing,
         }
     else:
         return HTTPSeeOther(request.route_path("home"))
@@ -188,7 +190,7 @@ def failure_view(request):
     return {
         'action': action[0],
         'message': message,
-        'project': project, 'website': website,
+        'project': project, 'website': website, 'ongoing': meeting.ongoing,
         }
 
 
@@ -204,7 +206,7 @@ def profile_list_view(request):
 
     profiles = request.dbsession.query(models.MumbleUser).filter_by(is_speaker=True).order_by("realname").all()
 
-    return {'profile_list': profiles, 'project': project, 'website': website}
+    return {'profile_list': profiles, 'project': project, 'website': website, 'ongoing': meeting.ongoing}
 
 
 @view_config(route_name='profile', renderer='pyramid_mumble:templates/profile.jinja2')
@@ -252,6 +254,7 @@ def profile_view(request):
             'zoom_url': zoom_url,
             'slides_url': slides_url,
             'project_url': project_url,
+            'ongoing': meeting.ongoing,
             }
 
 

@@ -1,5 +1,6 @@
 import sqlalchemy
 from sqlalchemy.orm import relationship
+import pytz, datetime
 
 from .meta import Base
 
@@ -14,6 +15,12 @@ class Meeting(Base):
     end_time = sqlalchemy.Column(sqlalchemy.DateTime(timezone=True))
     timezone = sqlalchemy.Column(sqlalchemy.Text)
     tracks = relationship("Track")
+
+    @property
+    def ongoing(self):
+        tz_mexico = pytz.timezone('America/Mexico_City')
+        now = datetime.datetime.now(tz_mexico)
+        return self.start_time <= now <= self.end_time
 
 
 class Track(Base):
