@@ -22,6 +22,7 @@ def main(global_config, **settings):
 
     if thread is None:
         thread = sio_server.start_background_task(background_thread)
+        #ToDo: it is necessary to end this thread when Pyramid stops or gets killed.
 
     def sio(request):
         return sio_server
