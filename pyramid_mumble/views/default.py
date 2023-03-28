@@ -25,9 +25,10 @@ def main_view(request):
         website = ''
 
     tz_mexico = pytz.timezone('America/Mexico_City')
+    utc = pytz.UTC
     # start_time = datetime.datetime(2022, 10, 3, 9, 0, 0, 0, tzinfo=tz_mexico)
-    start_time = meeting.start_time
-    now = datetime.datetime.now(tz_mexico)
+    start_time = utc.localize(meeting.start_time)
+    now = datetime.datetime.now(utc)
     if now < start_time:
         remaining = start_time - now
     else:

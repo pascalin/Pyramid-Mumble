@@ -18,9 +18,9 @@ class Meeting(Base):
 
     @property
     def ongoing(self):
-        tz_mexico = pytz.timezone('America/Mexico_City')
-        now = datetime.datetime.now(tz_mexico)
-        return self.start_time <= now <= self.end_time
+        utc = pytz.UTC
+        now = datetime.datetime.now(utc)
+        return utc.localize(self.start_time) <= now <= utc.localize(self.end_time)
 
 
 class Track(Base):
