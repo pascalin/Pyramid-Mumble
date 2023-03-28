@@ -49,9 +49,6 @@ def signin_view(request):
 
 @view_config(route_name='signup', renderer='pyramid_mumble:templates/signin.jinja2', permission=NO_PERMISSION_REQUIRED)
 def signup_view(request):
-    if request.is_authenticated:
-        raise HTTPSeeOther(request.route_path("profile", uid=request.identity.id))
-
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
@@ -59,6 +56,12 @@ def signup_view(request):
     else:
         project = "A Pyramid Mumble Site"
         website = ''
+
+    utc = pytz.UTC
+    if request.is_authenticated:
+        raise HTTPSeeOther(request.route_path("profile", uid=request.identity.id))
+    elif datetime.datetime.now(utc) > utc.localize(meeting.end_time):
+        raise HTTPSeeOther(request.route_path("home"))
 
     form = Form(users.user_schema, buttons=[Button('submit','Sign in')])
     # form['user']['captcha'].validator = colander.Function(lambda val: Captcha(request).validate(val) is None)
