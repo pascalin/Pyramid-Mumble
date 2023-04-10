@@ -23,4 +23,17 @@
         </blockquote>
     </div>
 </div>
+<div class="content row">
+    <div class="col-md">
+    {% if request.identity in activity.performers %}
+        {% if issue_form %}
+             {{ issue_form|safe }}
+        {% endif %}
+        {% if appstruct %}
+          {{ appstruct }}
+        {% endif %}
+    {% endif %}
+    </div>
+</div>
+
 {% endblock content %}

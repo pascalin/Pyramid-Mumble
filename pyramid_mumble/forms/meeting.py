@@ -30,3 +30,11 @@ class MeetingSchema(colander.MappingSchema):
     end_time = colander.SchemaNode(colander.DateTime())
     timezone = colander.SchemaNode(colander.String(), validator=colander.OneOf(pytz.common_timezones), widget=deform.widget.SelectWidget(values=timezones), default=deferred_tz_default, required=False, missing="")
     tracks = TrackListSchema()
+
+
+class IssueSchema(colander.MappingSchema):
+    activity_id = colander.SchemaNode(colander.Int(), validator=colander.Range(1, 99999), widget=deform.widget.HiddenWidget(), missing="")
+    can_publish = colander.SchemaNode(colander.Boolean(), title="Can be published?")
+    can_translate = colander.SchemaNode(colander.Boolean(), title="Can be translated?")
+    alt_title = colander.SchemaNode(colander.String(), missing="", title="Alternative title")
+    alt_description = colander.SchemaNode(colander.String(), widget=deform.widget.TextAreaWidget(), missing="", title="Alternative abstract")

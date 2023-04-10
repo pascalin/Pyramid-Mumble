@@ -9,7 +9,7 @@ from pyramid_mailer.message import Message
 from pyramid_captcha import Captcha
 from .. import security
 from .. import models
-from ..forms import users
+from ..forms import users, admin
 
 import datetime, pytz, pycountry, os
 

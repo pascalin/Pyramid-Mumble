@@ -19,6 +19,7 @@ from pyramid_captcha import Captcha
 from .. import security
 from .. import models
 from ..forms import meeting as meeting_forms
+from ..forms import admin as admin_forms
 
 import datetime
 import pytz
@@ -169,7 +170,7 @@ def session_edit_view(request):
         'activities': [{'id': activity.id, 'title':activity.title, 'description':activity.description} for activity in session.activities],
     }
 
-    session_schema = admin.SessionSchema().bind(tracks=meeting.tracks, default_track=session.track)
+    session_schema = admin_forms.SessionSchema().bind(tracks=meeting.tracks, default_track=session.track)
     form = Form(session_schema, buttons=[Button('submit',)])
 
     if 'submit' in request.POST:
@@ -220,7 +221,10 @@ def activity_view(request):
     if not activity:
         raise HTTPNotFound()
 
-    return {'activity': activity, 'project': project, 'website': website}
+    issue_schema = meeting_forms.IssueSchema().bind(activity_id=activity_id)
+    form = Form(issue_schema, buttons=[Button('submit',)])
+
+    return {'activity': activity, 'project': project, 'website': website, 'issue_form': form.render()}
 
 
 @view_config(route_name='edit_activity', renderer='pyramid_mumble:templates/admin_activities.jinja2', permission='admin')
@@ -249,7 +253,7 @@ def activity_edit_view(request):
         'performers': current_performer_ids,
     }
 
-    activity_schema = admin.ActivitySchema().bind(sessions=sessions, performers=speakers)
+    activity_schema = admin_forms.ActivitySchema().bind(sessions=sessions, performers=speakers)
     form = Form(activity_schema, buttons=[Button('submit',)])
 
     if 'submit' in request.POST:
