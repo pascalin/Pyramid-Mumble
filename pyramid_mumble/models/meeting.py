@@ -69,3 +69,12 @@ class Activity(Base):
     session_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('sessions.id'))
     session = relationship("Session", back_populates="activities")
     performers = relationship("MumbleUser", secondary=association_table, back_populates="activities")
+
+
+class Publication(Base):
+    __tablename__ = 'publications'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    title = sqlalchemy.Column(sqlalchemy.Text, default="")
+    description = sqlalchemy.Column(sqlalchemy.Text, default="")
+    activity_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('activities.id'))
+    activity = relationship("Activity")
