@@ -22,7 +22,7 @@
             <h3>{% if request.identity == profile %}Your schedule{% else %}Schedule{% endif %}<br></h3>
         <ul>
         {% for session in sessions %}
-            <li><a href="{{ request.route_url('session', session_id=session['id']) }}"><strong><em>{{ session['title'] }}</em></strong></a> on {{ session['start_time'] }}</li>
+            <li><a href="{{ request.route_path('session', session_id=session['id']) }}"><strong><em>{{ session['title'] }}</em></strong></a> on {{ session['start_time'] }}</li>
         {% endfor %}
         </ul>
         {% endif %}
@@ -40,7 +40,7 @@
         <h3>Activities you follow</h3>
         <ul>
         {% for session in followed %}
-            <li><a href="{{ request.route_url('session', session_id=session.id) }}">{{ session }}</a> on {{ session.start_time }}</li>
+            <li><a href="{{ request.route_path('session', session_id=session.id) }}">{{ session }}</a> on {{ session.start_time }}</li>
         {% endfor %}
         </ul>
     </div>

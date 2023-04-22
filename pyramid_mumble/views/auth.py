@@ -39,9 +39,9 @@ def login_view(request):
         website = ''
 
     next_url = request.params.get('next', request.referrer)
-    login_url = request.route_url('login')
+    login_url = request.route_path('login')
     if not next_url or next_url == login_url:
-        next_url = request.route_url('home')
+        next_url = request.route_path('home')
     form = Form(users.login_schema, buttons=[Button('submit', 'Log in')])
     # form['login']['captcha'].validator = colander.Function(lambda val: Captcha(request).validate(val))
 
@@ -119,7 +119,7 @@ def recover_view(request):
                                
                                {password}
                                 
-                               You can use it to log in through following link: {request.route_url('login')}
+                               You can use it to log in through following link: {request.route_path('login')}
                               
                               Sincerely,
                               the friendly webmaster of {project}.
@@ -129,7 +129,7 @@ def recover_view(request):
                               <p>Your password is the following:<br>
                                <strong>{password}</strong><br>
                                 and you can use it to log in through
-                               the following link: <a href="{request.route_url('login')}">{request.route_url('login')}</a></p>
+                               the following link: <a href="{request.route_path('login')}">{request.route_path('login')}</a></p>
                               <p>Sincerely,<br>
                               the friendly webmaster of {project}.</p>
                               """
@@ -145,7 +145,7 @@ def recover_view(request):
 
 @view_config(route_name='logout')
 def logout_view(request):
-    next_url = request.route_url('home')
+    next_url = request.route_path('home')
     new_csrf_token(request)
     headers = forget(request)
     return HTTPSeeOther(location=next_url, headers=headers)
@@ -162,7 +162,7 @@ def forbidden_view(exc, request):
         website = ''
 
     if not request.is_authenticated:
-        next_url = request.route_url('login', _query={'next': request.url})
+        next_url = request.route_path('login', _query={'next': request.url})
         return HTTPSeeOther(location=next_url)
 
     request.response.status = 403

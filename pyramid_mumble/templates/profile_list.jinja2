@@ -14,7 +14,7 @@
     {% if profile_list %}
         <ul>
         {% for profile in profile_list %}
-        <li><a href="{{ request.route_url('profile', uid=profile.id) }}">{{ profile.realname }}</a></li>
+        <li><a href="{{ request.route_path('profile', uid=profile.id) }}">{{ profile.realname }}</a></li>
         {% endfor %}
         </ul>
     {% else %}

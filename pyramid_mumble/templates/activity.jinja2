@@ -13,7 +13,7 @@
     <div class="col-md-4">
         <ul>
             {% for profile in activity.performers %}
-            <li><a href="{{ request.route_url('profile', uid=profile.id) }}">{{ profile.realname }}</a></li>
+            <li><a href="{{ request.route_path('profile', uid=profile.id) }}">{{ profile.realname }}</a></li>
             {% endfor %}
         </ul>
     </div>

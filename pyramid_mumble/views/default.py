@@ -105,7 +105,7 @@ def signup_view(request):
                            email with more details for logging into the conference website and to make some preparations
                            in order to enhance your interactions during the conference.
                                               
-                           To access the conference site enter: {request.route_url('login')}
+                           To access the conference site enter: {request.route_path('login')}
                            
                            Employing the following password:
                             
@@ -116,7 +116,7 @@ def signup_view(request):
                           <p>The workshop will take place from October 3-7.<br>Briefly, you will receive a confirmation
                            email with more details for logging into the conference website and to make some preparations
                            in order to enhance your interactions during the conference.</p>
-                           <p>To access the conference site enter: <a href="{request.route_url('login')}">{request.route_url('login')}</a><br>
+                           <p>To access the conference site enter: <a href="{request.route_path('login')}">{request.route_path('login')}</a><br>
                            Employing the following password:<br>
                             <strong>{password}</strong></p>
                            """,
