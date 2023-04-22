@@ -25,5 +25,5 @@ class MumbleUser(Base):
     activities = relationship("Activity", secondary=association_table, back_populates="performers")
 
 
-sqlalchemy.Index('my_index', MumbleUser.username, unique=True, mysql_length=255)
-sqlalchemy.Index('my_index', MumbleUser.email, unique=True, mysql_length=255)
+# sqlalchemy.Index('uniq_uname_index', MumbleUser.username, unique=True, mysql_length=255)
+# sqlalchemy.Index('uniq_email_index', MumbleUser.email, unique=True, mysql_length=255)

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="pyramid web application">
     <meta name="author" content="Pylons Project">
-    <link rel="shortcut icon" href="{{request.static_url('pyramid_mumble:static/pyramid-16x16.png')}}">
+    <link rel="shortcut icon" href="{{request.static_path('pyramid_mumble:static/pyramid-16x16.png')}}">
 
     <title>{{ project}} - Pyramid Mumble</title>
 
@@ -14,10 +14,10 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{{request.static_url('deform:static/css/form.css')}}" type="text/css" />
-    <link href="{{request.static_url('pyramid_mumble:static/theme.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{request.static_path('deform:static/css/form.css')}}" type="text/css" />
+    <link href="{{request.static_path('pyramid_mumble:static/theme.css')}}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="{{ request.static_url('pyramid_mumble:static/mumble.css') }}">
+    <link rel="stylesheet" href="{{ request.static_path('pyramid_mumble:static/mumble.css') }}">
 
     <!-- HTML5 shiv and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
         <div class="row">
             <div class="col-md-1 col-sm-1"></div>
           <div class="col-md-2 col-sm-5 text-center">
-              <p class="text-center"><a href="/"><img class="logo img-responsive" src="{{request.static_url('pyramid_mumble:static/trhelix.png') }}" alt="A Triple Helix Logo"></a></p>
+              <p class="text-center"><a href="/"><img class="logo img-responsive" src="{{request.static_path('pyramid_mumble:static/trhelix.png') }}" alt="A Triple Helix Logo"></a></p>
           </div>
             <div class="col-md-9 col-sm-6">
                 <h1 class="main-title"><a href="/"><span class="font-semi-bold">{{ project }}</span></a></h1>
@@ -46,10 +46,10 @@
           <div class="col-md-12">
             {% if not request.is_authenticated %}
                 <p class="pull-right">
-                <a href="{{ request.route_url('login') }}">Login</a>
+                <a href="{{ request.route_path('login') }}">Login</a>
                 </p>
             {% else %}
-                <form class="pull-right" action="{{ request.route_url('logout') }}" method="post">
+                <form class="pull-right" action="{{ request.route_path('logout') }}" method="post">
                     <a href="/profile/{{ request.identity.id }}/">{{request.identity.realname}}</a>
                 <input type="hidden" name="csrf_token" value="{{ get_csrf_token() }}">
                 <button class="btn btn-link" type="submit">Logout</button>
@@ -78,9 +78,9 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="//code.jquery.com/jquery-2.1.4.min.js" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="{{request.static_url('deform:static/scripts/deform.js')}}"></script>    <!-- Custom styles for this scaffold -->
+    <script type="text/javascript" src="{{request.static_path('deform:static/scripts/deform.js')}}"></script>    <!-- Custom styles for this scaffold -->
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.min.js"></script>
-    <script src="{{ request.static_url('pyramid_mumble:static/mumble.js') }}"></script>
+    <script src="{{ request.static_path('pyramid_mumble:static/mumble.js') }}"></script>
   </body>
 </html>
