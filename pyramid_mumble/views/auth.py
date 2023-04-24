@@ -52,6 +52,7 @@ def login_view(request):
         try:
             appstruct = form.validate(controls)
         except ValidationFailure as e:
+            request.session.flash('An error was detected when trying to log you in.')
             return {'login_form': e.render(), 'project': project, 'website': website}
 
         email = appstruct['login']['email']
@@ -64,9 +65,11 @@ def login_view(request):
                 user.lastlogin = datetime.datetime.utcnow()
                 new_csrf_token(request)
                 headers = remember(request, user.id)
+                request.session.flash('You were successfully logged in.')
                 return HTTPSeeOther(location=next_url, headers=headers)
 
         message = 'Failed login'
+        request.session.flash('Your attempt to log in was unsuccessful.')
         request.response.status = 400
         return HTTPSeeOther(request.route_path('failure', action=('login',)))
 

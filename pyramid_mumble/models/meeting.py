@@ -76,5 +76,7 @@ class Publication(Base):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     title = sqlalchemy.Column(sqlalchemy.Text, default="")
     description = sqlalchemy.Column(sqlalchemy.Text, default="")
+    can_publish = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    can_translate = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     activity_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('activities.id'))
     activity = relationship("Activity")

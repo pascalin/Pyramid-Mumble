@@ -57,6 +57,11 @@
             {% endif %}
           </div>
       </div>
+      <div class="row text-center">
+        <p class="col-md-2"></p>
+        <div class="col-md-8"><ul>{% for msg in request.session.pop_flash() %}<li class="list-unstyled alert-info" style="border-radius:.25rem;">{{ msg }}</li>{% endfor %}</ul></div>
+        <p class="col-md-2"></p>
+      </div>
         {% block content %}
             <p>No content</p>
         {% endblock content %}

@@ -220,11 +220,57 @@ def activity_view(request):
     activity = request.dbsession.query(models.Activity).filter_by(id=activity_id).first()
     if not activity:
         raise HTTPNotFound()
+    issue = request.dbsession.query(models.Publication).filter_by(activity_id=activity_id).first()
+
+    if issue:
+        appstruct = {
+            'alt_title': issue.title,
+            'alt_description': issue.description,
+            'activity_id': activity_id,
+            'can_publish': issue.can_publish,
+            'can_translate': issue.can_translate,
+        }
+    else:
+        appstruct = {
+            'alt_title': activity.title,
+            'alt_description': activity.description,
+            'activity_id': activity_id,
+        }
 
     issue_schema = meeting_forms.IssueSchema().bind(activity_id=activity_id)
     form = Form(issue_schema, buttons=[Button('submit',)])
 
-    return {'activity': activity, 'project': project, 'website': website, 'issue_form': form.render()}
+    if 'submit' in request.POST:
+        controls = request.POST.items()
+        try:
+            appstruct = form.validate(controls)
+        except ValidationFailure as e:
+            return {'issue_form': e.render(), 'activity': activity, 'project': project}
+
+        if issue:
+            updated = False
+            if issue.title != appstruct['alt_title']:
+                issue.title = appstruct['alt_title']
+                updated = True
+            if issue.description != appstruct['alt_description']:
+                issue.description = appstruct['alt_description']
+                updated = True
+            if issue.can_publish != appstruct['can_publish']:
+                issue.can_publish = appstruct['can_publish']
+                updated = True
+            if issue.can_translate != appstruct['can_translate']:
+                issue.can_translate = appstruct['can_translate']
+                updated = True
+            if updated:
+                request.session.flash('Your choices were updated.')
+        else:
+            issue = models.Publication(title=appstruct['alt_title'], description=appstruct['alt_description'],
+                                       can_publish=appstruct['can_publish'], can_translate=appstruct['can_translate'],
+                                       activity_id=activity_id)
+            request.dbsession.add(issue)
+            request.session.flash('Your choices were saved.')
+
+    return {'activity': activity, 'project': project, 'website': website, 'issue_form': form.render(appstruct)}
 
 
 @view_config(route_name='edit_activity', renderer='pyramid_mumble:templates/admin_activities.jinja2', permission='admin')
