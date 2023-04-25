@@ -216,7 +216,7 @@ def profile_list_view(request):
 @view_config(route_name='profile_redirect')
 def profile_redirect(request):
     if request.is_authenticated:
-        return HTTPSeeOther(location=request.route_path('profile', request.identity.id))
+        return HTTPSeeOther(location=request.route_path('profile', uid=krequest.identity.id))
     else:
         return HTTPSeeOther(location=request.route_path('home'))
 
