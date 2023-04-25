@@ -213,11 +213,17 @@ def profile_list_view(request):
     return {'profile_list': profiles, 'project': project, 'website': website, 'ongoing': meeting.ongoing}
 
 
+@view_config(route_name='profile_redirect')
+def profile_redirect(request):
+    if request.is_authenticated:
+        return HTTPSeeOther(location=request.route_path('profile', request.identity.id))
+    else:
+        return HTTPSeeOther(location=request.route_path('home'))
+
+
 @view_config(route_name='profile', renderer='pyramid_mumble:templates/profile.jinja2')
 def profile_view(request):
-    uid = request.matchdict.get('uid', None)
-    if not uid and request.is_authenticated:
-        return HTTPSeeOther(location=request.route_path('profile', request.identity.id))
+    uid = request.matchdict['uid']
     meeting = request.dbsession.query(models.Meeting).first()
     if meeting:
         project = meeting.title
