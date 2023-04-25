@@ -215,7 +215,7 @@ def profile_list_view(request):
 
 @view_config(route_name='profile', renderer='pyramid_mumble:templates/profile.jinja2')
 def profile_view(request):
-    uid = request.matchdict['uid']
+    uid = request.matchdict.get('uid', None)
     if not uid and request.is_authenticated:
         return HTTPSeeOther(location=request.route_path('profile', request.identity.id))
     meeting = request.dbsession.query(models.Meeting).first()
