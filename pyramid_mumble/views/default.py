@@ -28,18 +28,20 @@ def main_view(request):
     utc = pytz.UTC
     # start_time = datetime.datetime(2022, 10, 3, 9, 0, 0, 0, tzinfo=tz_mexico)
     start_time = utc.localize(meeting.start_time)
+    end_time = utc.localize(meeting.end_time)
     now = datetime.datetime.now(utc)
     if now < start_time:
         remaining = start_time - now
     else:
         remaining = datetime.timedelta(0)
+    registration = now < end_time
     try:
         query = request.dbsession.query(models.MumbleUser)
         users = query.all()
     except SQLAlchemyError:
         return Response(db_err_msg, content_type='text/plain', status=500)
     return {'users': len(users), 'days': remaining.days, 'speakers': 39,
-            'project': project, 'website': website, 'ongoing': meeting.ongoing}
+            'project': project, 'website': website, 'registration': registration}
 
 
 @view_config(route_name='signin', permission=NO_PERMISSION_REQUIRED)
