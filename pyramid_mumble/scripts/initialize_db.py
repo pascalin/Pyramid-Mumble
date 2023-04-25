@@ -7,6 +7,7 @@ from pyramid.paster import bootstrap, setup_logging
 from sqlalchemy.exc import OperationalError
 
 from .. import models
+from ..security import random_password, hash_password
 
 
 def setup_models(dbsession):
@@ -25,6 +26,9 @@ def setup_models(dbsession):
         is_staff=True,
         timezone="America/Mexico_City",
     )
+    passwd = random_password()
+    model.password = hash_password(passwd)
+    print(f"User {model.email} created with password {passwd}")
     dbsession.add(model)
 
     tz_mexico = pytz.timezone('America/Mexico_City')
