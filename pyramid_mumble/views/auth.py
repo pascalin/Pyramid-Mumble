@@ -38,7 +38,7 @@ def login_view(request):
         project = "A Pyramid Mumble Site"
         website = ''
 
-    next_url = request.params.get('next', request.referrer)
+    next_url = request.params.get('next')
     login_url = request.route_path('login')
     if not next_url or next_url == login_url:
         next_url = request.route_path('home')
