@@ -21,8 +21,9 @@ def main(global_config, **settings):
             sio_server.emit('my_response', {'data': 'Server generated event #{}'.format(count)})
 
     if thread is None:
-        thread = sio_server.start_background_task(background_thread)
-        #ToDo: it is necessary to end this thread when Pyramid stops or gets killed.
+        # thread = sio_server.start_background_task(background_thread)
+        # ToDo: it is necessary to end this thread when Pyramid stops or gets killed.
+        pass
 
     def sio(request):
         return sio_server
