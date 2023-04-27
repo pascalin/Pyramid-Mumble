@@ -14,8 +14,8 @@
 {#  <p class="lead">Welcome to <span class="font-normal">{{project}}</span>.</p>#}
         <div class="site-actions col-md-3"></div>
         <div class="site-actions col-md-5">
-    {% if not request.is_authenticated and registration %}
-    <p>Do you want to <strong><a href="/signup/">register</a></strong>?</p>
+    {% if not request.is_authenticated %}
+        {% if registration  %}<p>Do you want to <strong><a href="/signup/">register</a></strong>?</p>{% endif %}
     <p>Are you already registered? Please proceed to <strong><a href="/login/">login</a></strong></p>
         {% else %}
         <p>Welcome to the <strong>{{ project }}</strong> conference site.<br>
